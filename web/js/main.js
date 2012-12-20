@@ -5,7 +5,15 @@
 
 $(document).ready(function () 
 {
+    $("img.display").mouseenter(function ()
+    {
+        $(this).next().fadeIn(250);
+    });
     
+    $("img.display").mouseout(function ()
+    {
+       $(this).next().fadeOut(250); 
+    });
 });
 
 

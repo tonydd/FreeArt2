@@ -18,6 +18,7 @@
                 {
                     out.println("<div class=\"display\" >");
                     out.println("<img src=\"img/2012-12-10 12.53.06.jpg\" class=\"display\" /> ");
+                    out.println("<p class=\"comment\">Commenter</p>");
                     out.println("<br /> Un petit burger pozé");
                     out.println("</div>");
                 }

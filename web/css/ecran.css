@@ -114,3 +114,8 @@ img.display{
     width: 150px;
     height: auto;
 }
+
+p.comment
+{
+    display: none;
+}
