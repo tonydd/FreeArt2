@@ -10,6 +10,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" href="css/ecran.css">
+        <script type="text/javascript" src="js/main.js"></script>
         <title>FreeArt</title>
     </head>
     <body>
@@ -30,9 +31,9 @@
             <%
                 for (int i = 0; i< 10; i++)
                 {
-                    out.println("<p>" + i + "</p>");
+                    out.println("<p style=\"margin-left: 2%;\"> Element  " + i + "</p>");
                 }
-                %>
+            %>
         </div>
         
         <div id="mainContainer">
