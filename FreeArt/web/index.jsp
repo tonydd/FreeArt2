@@ -27,6 +27,12 @@
             <h2>
                 Catégories
             </h2>
+            <%
+                for (int i = 0; i< 10; i++)
+                {
+                    out.println("<p>" + i + "</p>");
+                }
+                %>
         </div>
         
         <div id="mainContainer">
