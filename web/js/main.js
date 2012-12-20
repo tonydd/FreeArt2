@@ -3,6 +3,9 @@
  * and open the template in the editor.
  */
 
-alert("yo");
+$(document).ready(function () 
+{
+    
+});
 
 
