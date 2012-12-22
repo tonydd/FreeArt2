@@ -7,4 +7,18 @@
             <h2>
                 Catégories
             </h2>
+    
+            <ul id="categories">
+                <!--
+                <li>Paysages</li>
+                <li>Animaux</li>
+                <li>Voitures</li>
+                <li>Photographie</li>
+                <li>Films</li>
+                <li>Jeux vidéos</li>
+                <li>Abstrait</li>
+                <li>3D Art</li>
+                <li>Autres</lI>
+                -->
+            </ul>
         </div>

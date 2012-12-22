@@ -37,7 +37,7 @@ header h1{
 
 header div {
     float: right;
-    padding: 20px;
+    margin-right: 20px;
 }
 
 /* --- MENU LEFT --- */
@@ -68,6 +68,22 @@ div#left h2 {
     margin: auto;
 }
 
+div#left ul
+{
+    list-style: none;
+}
+
+div#left ul li
+{
+    padding: 10px;
+}
+
+div#left ul li:hover
+{
+    border: 1px solid black;
+    cursor: pointer;
+}
+
 /* --- MENU BOTTOM --- */
 
 footer {
@@ -84,11 +100,13 @@ footer {
     footer div#detailsPanier
     {
         float: left;
+        bottom: 0;
     }
     
     footer div#about
     {
         float: right;
+        bottom: 0;
     }
 
 /* --- MAIN CONTAINER --- */
@@ -115,7 +133,47 @@ img.display{
     height: auto;
 }
 
+img.icon
+{
+    width: 35px;
+    height: 35px;
+}
+
+img#login
+{
+    margin-top: 15px;
+    margin-left: 50px;
+}
+
+img.onclick:hover
+{
+    cursor: pointer;
+}
+
 p.comment
 {
     display: none;
 }
+
+div#div_login
+{
+    display: none;
+    padding: 50px;
+    vertical-align: middle;
+    text-align: center;
+    margin: auto;
+}
+
+    form#form_login
+    {
+        margin: 20px;
+    }
+        form#form_login input
+        {
+            float: right;
+        }
+        
+        form#form_login label
+        {
+            float: left;
+        }
