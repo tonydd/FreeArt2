@@ -14,6 +14,15 @@ $(document).ready(function ()
     {
        $(this).next().fadeOut(250); 
     });
+    
+    $.get(
+        'NewServlet',
+        {},
+        function(data)
+        {
+            alert(data);
+        }
+    );
 });
 
 
