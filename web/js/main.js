@@ -34,13 +34,35 @@ $(document).ready(function ()
    
    $("img#login").click( function()
     {
+        /*
        $.blockUI(
             {
                 message : document.getElementById('div_login').innerHTML,
                 css : {padding : "50px", cursor: "default"}
             }
         );
+        */
+       
+       
     });
+    
+     $( "#dialog-form" ).dialog({
+            autoOpen: false,
+            height: 300,
+            width: 350,
+            modal: true,
+            buttons: {
+                "Create an account": function() {
+                    $( this ).dialog( "close" );
+                },
+                Cancel: function() {
+                    $( this ).dialog( "close" );
+                }
+            },
+            close: function() {
+                $( this ).dialog( "close" );
+            }
+        });
 });
 
 function unblockUI()

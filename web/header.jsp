@@ -8,12 +8,28 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" href="css/ecran.css">
+        <link rel="stylesheet" href="css/redmond/jquery-ui-1.9.2.custom.min">
         <script type="text/javascript" src="js/jquery.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.9.2.custom.min"></script>
         <script type="text/javascript" src="js/blockUI.js"></script>
         <script type="text/javascript" src="js/main.js"></script>
         <title>FreeArt</title>
     </head>
     <body>
+        <div id="dialog-form" title="Create new user">
+            <p class="validateTips">All form fields are required.</p>
+
+            <form>
+            <fieldset>
+                <label for="name">Name</label>
+                <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" />
+                <label for="email">Email</label>
+                <input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all" />
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" value="" class="text ui-widget-content ui-corner-all" />
+            </fieldset>
+            </form>
+        </div>
         <div id="div_login">
             <h2 align="center">Connexion à votre compte utilisateur</h2>
             <form id="form_login">
