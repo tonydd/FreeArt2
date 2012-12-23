@@ -53,8 +53,8 @@ public class Categorie {
         
         try
         {
-                System.out.println();
-                Class.forName("com.mysql.jdbc.Driver");
+                System.out.println("DRIVER : " + Driver.class.getName());
+                Class.forName(Driver.class.getName());
                 Connection connec = DriverManager.getConnection("jdbc:mysql://pipit.u-strasbg.fr:3306/2012_tstocker", "2012_tstocker", "zz0euypu");
                 System.out.println("/\\ Connected /\\");
                 
