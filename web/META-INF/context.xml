@@ -1,2 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" path="/FreeArt"/>
+<Context antiJARLocking="false" path="/FreeArt">
+<Resource auth="Container" driverClassName="com.mysql.jdbc.Driver" 
+maxActive="20" maxIdle="10" maxWait="-1" name="jdbc/example_MySQL" 
+password="password" type="javax.sql.DataSource" 
+url="jdbc:mysql://pipit.u-strasbg.fr:3306/2012_tstocker" 
+username="2012_tstocker"/> 
+  <ResourceLink global="jdbc/example_MySQL" name="jdbc/example_MySQL" 
+type="javax.sql.DataSource"/> 
+</Context> 
