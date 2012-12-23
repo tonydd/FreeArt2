@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -72,16 +73,12 @@ public class MainController extends HttpServlet {
         
         if ("categories".equals(data))
         {
-            ResultSet rs = Categorie.getCategories();
-                    try {
-                        while (rs.next())
-                        {
-                            out.println("<li onclick=\"changeCategorie(this)\" id=\"" + rs.getInt(0) + "\" >" + rs.getString(1) + "</li>");
-                        }
-                    } 
-                    catch (SQLException ex) {
-                        Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+            ArrayList<Categorie> cat = Categorie.getCategories();
+            out.println("lol : " + cat);
+            for (Categorie c : cat)
+            {
+                out.println("<li onclick=\"changeCategorie(this)\" id=\"" + c.getId() + "\" >" + c.getCategorie() + "</li>");
+            }
         }
         
         out.close();

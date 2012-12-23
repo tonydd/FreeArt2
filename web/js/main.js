@@ -42,21 +42,21 @@ $(document).ready(function ()
             }
         );
         */
-       
+       $( "#div_login" ).dialog( "open" );
        
     });
     
-     $( "#dialog-form" ).dialog({
+     $( "#div_login" ).dialog({
             autoOpen: false,
             height: 300,
-            width: 350,
+            width: 500,
             modal: true,
             buttons: {
-                "Create an account": function() {
+                "Pas encore inscrit ?": function() {
                     $( this ).dialog( "close" );
                 },
-                Cancel: function() {
-                    $( this ).dialog( "close" );
+                "Se connecter" : function() {
+                    logUser();
                 }
             },
             close: function() {

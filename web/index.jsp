@@ -11,7 +11,6 @@
             <h2>
                 Galleries d'images
             </h2>
-        <input type="text" id="CACA" />
             <%
             //<a href="image.jpg" class="preview" title="Great looking landscape">Roll over to preview</a>
             //<a href="1.jpg" class="preview"><img src="1s.jpg" alt="gallery thumbnail" /></a>

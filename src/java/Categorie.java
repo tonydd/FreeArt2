@@ -17,17 +17,53 @@ import java.util.ArrayList;
  */
 public class Categorie {
     
-    public static ResultSet getCategories() {
-        ResultSet rs = null;
+    private int id;
+    private String cat;
+    
+    public Categorie(int id, String categorie)
+    {
+        this.id = id;
+        this.cat = categorie;
+    }
+    
+    public void setCategorie(String categorie)
+    {
+        this.cat = categorie;
+    }
+    
+    public String getCategorie()
+    {
+        return this.cat;
+    }
+    
+    public void setId(int id)
+    {
+        this.id = id;
+    }
+    
+    public int getId()
+    {
+        return this.id;
+    }
+    
+    
+    
+    public static ArrayList<Categorie> getCategories() {
+        ArrayList<Categorie> res = new ArrayList<Categorie>();
         
         try
         {
-                Class.forName(Driver.class.getName());
+                Class.forName("com.mysql.jdbc");
                 Connection connec = DriverManager.getConnection("jdbc:mysql://pipit.u-strasbg.fr:3306/2012_tstocker", "2012_tstocker", "zz0euypu");
                 System.out.println("/\\ Connected /\\");
                 
                 Statement stmt = connec.createStatement();
-                rs = stmt.executeQuery("SELECT * FROM CATEGORIE");
+                ResultSet rs = stmt.executeQuery("SELECT * FROM CATEGORIE");
+                while (rs.next())
+                {
+                    System.out.println("sisi");
+                    res.add(new Categorie(rs.getInt(0), rs.getString(1)));
+                }
                 
         }
         catch (Exception e)
@@ -36,7 +72,7 @@ public class Categorie {
             System.out.println(e);
         }
         
-        return rs;
+        return res;
     }
     
 }
