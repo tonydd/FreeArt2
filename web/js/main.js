@@ -7,7 +7,7 @@ $(document).ajaxStart($.blockUI).ajaxStop($.unblockUI);
 
 $(document).ready(function () 
 {
-    /*
+    
     $("img.display").mouseenter(function ()
     {
         $(this).next().fadeIn(250);
@@ -17,9 +17,10 @@ $(document).ready(function ()
     {
        $(this).next().fadeOut(250); 
     });
-    */
+    
     
     /* --- Chargement des catégories --- */
+    
     $.get(
         'MainController',
         {
@@ -31,19 +32,24 @@ $(document).ready(function ()
             $("ul#categories").html(data);
         }
     );
+    
+        
+    /* --- TEMP --- Chargement jeu essai images --- */
+   $.get(
+        'MainController',
+        {
+            data : "images"
+        },
+        function(data)
+        {
+            $("div#mainContainer").append(data);
+        }
+    );
+   
    
    $("img#login").click( function()
     {
-        /*
-       $.blockUI(
-            {
-                message : document.getElementById('div_login').innerHTML,
-                css : {padding : "50px", cursor: "default"}
-            }
-        );
-        */
-       $( "#div_login" ).dialog( "open" );
-       
+       $( "#div_login" ).dialog( "open" );      
     });
     
      $( "#div_login" ).dialog({

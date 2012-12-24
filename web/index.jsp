@@ -14,6 +14,7 @@
             <%
             //<a href="image.jpg" class="preview" title="Great looking landscape">Roll over to preview</a>
             //<a href="1.jpg" class="preview"><img src="1s.jpg" alt="gallery thumbnail" /></a>
+            /*
                 for (int i = 0; i < 20; i++)
                 {
                     out.println("<div class=\"display\" >");
@@ -22,6 +23,7 @@
                     out.println("<br /> Un petit burger pozé");
                     out.println("</div>");
                 }
+ * */
             %>
             
         </div>

@@ -12,6 +12,16 @@ body {
 
 /* --- TOP BANNER --- */
 
+img#logo
+{
+    position: absolute;
+    top: 0.1%;
+    left: 0.5%;
+    height: 9.8%;
+    width: auto;
+    z-index: 150;
+}
+
 header{
     width: 100%;
     height: 10%;
@@ -21,6 +31,7 @@ header{
     border-bottom: 2px solid black;
     background-color: grey;
     overflow: hidden;
+    z-index: 5;
     
 background: #b7deed; /* Old browsers */
 background: -moz-linear-gradient(top, #b7deed 0%, #71ceef 50%, #21b4e2 51%, #b7deed 100%); /* FF3.6+ */
@@ -33,6 +44,9 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#b7deed', end
 
 header h1{
     float: left;
+    margin-left: 15%;
+    color: white;
+    margin-bottom: 1%;
 }
 
 header div {
@@ -50,16 +64,7 @@ div#left {
     left:0;
     border-right: 2px solid black;
     border-top: 2px solid black;
-    background-color: gainsboro;
-    background: #63b6db; /* Old browsers */
-    background: -moz-linear-gradient(top, #63b6db 0%, #309dcf 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#63b6db), color-stop(100%,#309dcf)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, #63b6db 0%,#309dcf 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, #63b6db 0%,#309dcf 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, #63b6db 0%,#309dcf 100%); /* IE10+ */
-    background: linear-gradient(to bottom, #63b6db 0%,#309dcf 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#63b6db', endColorstr='#309dcf',GradientType=0 ); /* IE6-9 */
-    
+    background-color: #83D2EF;    
 }
 
 div#left h2 {
@@ -129,7 +134,7 @@ div.display
 }
 
 img.display{
-    width: 150px;
+    width: 300px;
     height: auto;
 }
 
@@ -176,3 +181,22 @@ div#div_login
         {
             float: left;
         }
+
+div.actions
+{
+    border-radius: 5px;
+    background-color: gainsboro;
+    margin-top: -5px;
+}
+    img.action
+    {
+        width: 30px;
+        height: 30px;
+        display: inline-block;
+        margin: 5px 10px 5px 10px;
+    }
+    
+    img.action:hover
+    {
+        cursor: pointer;
+    }

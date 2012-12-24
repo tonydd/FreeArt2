@@ -27,9 +27,11 @@
                 <input type="password" id="txt_password" values="txt_password" />
             </form>
         </div>
+        <img id="logo" src="img/FreeArt.png" />
         <header>
+            
             <h1>
-                FreeArt : Contribuez à l'art en ligne
+               Contribuez à l'art en ligne
             </h1>
             <div id="searchfield">
                 <label for="search">Rechercher</label>

@@ -81,6 +81,11 @@ public class MainController extends HttpServlet {
             }
         }
         
+        else if ("images".equals(data))
+        {
+            GImage.getImages(request, response);
+        }
+        
         out.close();
     }
 
