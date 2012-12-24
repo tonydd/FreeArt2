@@ -74,7 +74,7 @@ public class MainController extends HttpServlet {
         if ("categories".equals(data))
         {
             ArrayList<Categorie> cat = Categorie.getCategories();
-            out.println("lol : " + cat);
+//            out.println("lol : " + cat);
             for (Categorie c : cat)
             {
                 out.println("<li onclick=\"changeCategorie(this)\" id=\"" + c.getId() + "\" >" + c.getCategorie() + "</li>");
