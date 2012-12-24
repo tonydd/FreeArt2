@@ -51,6 +51,7 @@ public class Categorie {
     public static ArrayList<Categorie> getCategories() {
         ArrayList<Categorie> res = new ArrayList<Categorie>();
         
+        
         try
         {
                 System.out.println("DRIVER : " + Driver.class.getName());
