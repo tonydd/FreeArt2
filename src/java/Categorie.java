@@ -56,14 +56,12 @@ public class Categorie {
         {
                 System.out.println("DRIVER : " + Driver.class.getName());
                 Class.forName("com.mysql.jdbc.Driver");
-                Connection connec = DriverManager.getConnection("jdbc:mysql://pipit.u-strasbg.fr:3306/2012_tstocker", "2012_tstocker", "zz0euypu");
                 System.out.println("/\\ Connected /\\");
-                
+                Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
                 Statement stmt = connec.createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM CATEGORIE");
                 while (rs.next())
                 {
-                    System.out.println("sisi");
                     res.add(new Categorie(rs.getInt(0), rs.getString(1)));
                 }
                 
