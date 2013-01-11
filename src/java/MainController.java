@@ -3,11 +3,14 @@
  * and open the template in the editor.
  */
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -15,6 +18,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.fileupload.DiskFileUpload;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
  *
@@ -107,16 +115,67 @@ public class MainController extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
 
+        
         if ("login".equals(action))
         {
             if(Login.login(request.getParameter("txt_login"), request.getParameter("txt_passwd")))
             {
-                out.println("LOGGED");
+                out.println("OK");
             }
             else
             {
                 out.println("KO");
             }
+        }
+        
+        else
+        {
+                    try {
+                        
+                        DiskFileItemFactory fileItemFactory = new DiskFileItemFactory( );
+                        
+                        ServletFileUpload upload = new ServletFileUpload( fileItemFactory );
+                        
+                        // Set upload parameters
+                        int  yourMaxMemorySize = 2048 * 1024 * 8; // en bytes
+                        int  yourMaxRequestSize = 4096 * 1024 * 8;
+                        String yourTempDirectory = getServletContext().getRealPath("/photos/");
+
+                        fileItemFactory.setSizeThreshold( yourMaxMemorySize );
+                        upload.setSizeMax( yourMaxRequestSize );
+                        
+                        String photo = "";
+                        
+                        List items = upload.parseRequest(request);
+                        Iterator iter = items.iterator();
+                        while (iter.hasNext()) 
+                        {
+                           FileItem item = (FileItem) iter.next();
+                           if (item.isFormField()) {
+                                 String name = item.getFieldName();
+                                String value = item.getString();
+                                photo = item.getString();
+                                out.println(name + " | " + value);
+                           }
+                           else {
+					// Handle Uploaded files.
+					out.println("Field Name = " + item.getFieldName()
+							+ ", File Name = " + item.getName()
+							+ ", Content type = " + item.getContentType()
+							+ ", File Size = " + item.getSize());
+					/*
+					 * Write file to the ultimate location.
+					 */
+					File uploadedFile = new File(yourTempDirectory + photo);
+                                        item.write(uploadedFile);
+				}
+                       }
+                        
+                    } catch (Exception ex) {
+                        out.println(ex);
+                        //Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            
         }
         
         out.close();

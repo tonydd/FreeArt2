@@ -25,7 +25,7 @@ public class Login {
         try 
             {
                 Class.forName(Driver.class.getName());
-                Connection connec = DriverManager.getConnection("jdbc:mysql://pipit.u-strasbg.fr:3306/2012_tstocker", "2012_tstocker", "zz0euypu");
+                Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
                 System.out.println("/\\ Connected /\\");
                 
                 Statement stmt = connec.createStatement();

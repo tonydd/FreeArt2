@@ -62,7 +62,7 @@ public class Categorie {
                 ResultSet rs = stmt.executeQuery("SELECT * FROM CATEGORIE");
                 while (rs.next())
                 {
-                    res.add(new Categorie(rs.getInt(0), rs.getString(1)));
+                    res.add(new Categorie(rs.getInt(1), rs.getString(2)));
                 }
                 
         }
