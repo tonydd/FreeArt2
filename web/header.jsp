@@ -43,22 +43,23 @@
             </form>
         </div>
         
-        <div id="div_menu">
+        <div id="div_menu" class="hide">
             <ul>
-                <li>1</li>
-                <li>2</li>
+                <li>Voir mon profil</li>
+                <li onclick='$( "#div_upload" ).dialog( "open" ); toggleMenu();'>Uploader une image</li>
+                <li>Se déconnecter</li>
             </ul>
         </div>
         
         <header>
             <!--<img id="logo" src="img/FreeArt.png" />-->
-            <h1 style="font-variant: small-caps; font-style: oblique ;" id="hihi">
+            <h1 style="font-variant: small-caps; font-style: oblique ;">
                FreeArt : Contribuez à l'art en ligne
             </h1>
             <div id="searchfield">
                 <label for="search">Rechercher</label>
                 <input type="text" placeholder="Entrez un mot clé" id="searc" name="search" />
-                <img src="img/login.png" class="icon onclick" id="login" />
+                <img src="img/login.png" class="icon onclick" id="login" onclick="$( '#div_login' ).dialog( 'open' );"/>
             </div>
         </header>
 

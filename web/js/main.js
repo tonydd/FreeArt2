@@ -47,17 +47,6 @@ $(document).ready(function ()
             $("div#mainContainer").append(data);
         }
     );
-   
-   
-   $("img#login").click( function()
-    {
-       $( "#div_login" ).dialog( "open" );      
-    });
-    
-    $('h1#hihi').click( function ()
-    {
-        $( "#div_upload" ).dialog( "open" );     
-    })
     
      $( "#div_login" ).dialog({
             autoOpen: false,
@@ -117,23 +106,17 @@ function logUser()
         },
         function(data)
         {
-            alert(data);
-            if (data != "OK")
+            console.log(data);
+            if (data != "ciboulette")
             {
-                $.unblockUI();
+                $( "#div_login" ).dialog( 'close' );
+                $.growlUI('Notification', 'Connexion éffectuée avec succès !'); 
                 document.getElementById('login').setAttribute('src', "img/ok.png");
-                $("#login").click(function()
-                {
-                   $("div#div_menu").animate({
-                        height : '+= 300'
-                        },
-                        1000
-                    );
-                });
+                document.getElementById('login').onclick = toggleMenu;
             }
             else
             {
-                $.unblockUI();
+                $( "#div_login" ).dialog( 'close' );
                 alert("LOGIN FAILED");
             }
         }
@@ -201,5 +184,37 @@ function addToPanier(photo)
                 color: '#fff' 
             } 
         });
+}
+
+function toggleMenu()
+{
+    if ($("div#div_menu").hasClass('hide'))
+    {
+        $("div#div_menu").removeClass('hide');
+        $("div#div_menu").animate(
+        {
+            'height' : '200px',
+            'opacity' : '0.7'
+            },
+            500,
+            function()
+            {               
+            }
+        );
+    }
+    else
+    {
+        $("div#div_menu").animate(
+        {
+            'height' : '0px',
+            'opacity' : '0'
+            },
+            500,
+            function()
+            {
+                $(this).addClass('hide');
+            }
+        );
+    }
 }
 

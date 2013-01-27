@@ -120,7 +120,7 @@ public class MainController extends HttpServlet {
         {
             if(Login.login(request.getParameter("txt_login"), request.getParameter("txt_passwd")))
             {
-                out.println("OK");
+                out.println("ciboulette");
             }
             else
             {
@@ -128,7 +128,7 @@ public class MainController extends HttpServlet {
             }
         }
         
-        else
+        else //UPLOAD
         {
                     try {
                         
@@ -137,9 +137,9 @@ public class MainController extends HttpServlet {
                         ServletFileUpload upload = new ServletFileUpload( fileItemFactory );
                         
                         // Set upload parameters
-                        int  yourMaxMemorySize = 2048 * 1024 * 8; // en bytes
-                        int  yourMaxRequestSize = 4096 * 1024 * 8;
-                        String yourTempDirectory = getServletContext().getRealPath("/photos/");
+                        int  yourMaxMemorySize = 4096 * 1024 * 8; // en bytes
+                        int  yourMaxRequestSize = 8192 * 1024 * 8;
+                        String yourTempDirectory = getServletContext().getRealPath("/photos");
 
                         fileItemFactory.setSizeThreshold( yourMaxMemorySize );
                         upload.setSizeMax( yourMaxRequestSize );
