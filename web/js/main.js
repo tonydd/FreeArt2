@@ -3,7 +3,43 @@
  * and open the template in the editor.
  */
 
-$(document).ajaxStart($.blockUI).ajaxStop($.unblockUI);
+if (!Array.prototype.indexOf)
+{
+  Array.prototype.indexOf = function(elt /*, from*/)
+  {
+    var len = this.length;
+
+    var from = Number(arguments[1]) || 0;
+    from = (from < 0)
+         ? Math.ceil(from)
+         : Math.floor(from);
+    if (from < 0)
+      from += len;
+
+    for (; from < len; from++)
+    {
+      if (from in this &&
+          this[from] === elt)
+        return from;
+    }
+    return -1;
+  };
+}
+
+ Array.prototype.unset = function(val){
+    var index = this.indexOf(val)
+    if(index > -1){
+        this.splice(index,1)
+    }
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
+$(document).ajaxStart(function()
+{
+    $.blockUI({ message: '<img src="img/ajax_spinner.gif" />' })
+})
+.ajaxStop($.unblockUI);
 
 var panier = Array();
 
@@ -30,7 +66,6 @@ $(document).ready(function ()
         },
         function(data)
         {
-            alert(data);
             $("ul#categories").html(data);
         }
     );
@@ -107,18 +142,35 @@ function logUser()
         function(data)
         {
             console.log(data);
-            if (data != "ciboulette")
+            if (data == "OK")
             {
                 $( "#div_login" ).dialog( 'close' );
-                $.growlUI('Notification', 'Connexion éffectuée avec succès !'); 
                 document.getElementById('login').setAttribute('src', "img/ok.png");
                 document.getElementById('login').onclick = toggleMenu;
+                window.setTimeout(function() {showSuccessGrowlDiv("Login", "Vous êtes maintenant identifiés")}, 500);                
             }
             else
             {
                 $( "#div_login" ).dialog( 'close' );
                 alert("LOGIN FAILED");
             }
+        }
+    );
+}
+
+function logOut()
+{
+    toggleMenu();
+    $.post(
+        "MainController",
+        {
+            action : "logout"
+        },
+        function(data)
+        {
+            document.getElementById('login').setAttribute('src', "img/login.png");
+            document.getElementById('login').onclick = showLoginModal;
+            window.setTimeout(function() {showSuccessGrowlDiv("Logout", "Vous êtes maintenant déconnecté")}, 500);                
         }
     );
 }
@@ -134,7 +186,8 @@ function sendPic(formData)
             },
             success: function(data)
             {
-                alert(data);
+                $( "#div_upload" ).dialog( 'close' );
+                window.setTimeout(function() {showSuccessGrowlDiv(data, "Uploadé avec succès")}, 500);
             },
             data: formData,
             cache: false,
@@ -145,45 +198,19 @@ function sendPic(formData)
 
 function addToPanier(photo)
 {
-    var div = document.createElement('div');
-    var title = document.createElement('h2');
-    var content = document.createElement('p');
-    var img = document.createElement('img');
-    
-    title.appendChild(document.createTextNode(photo.id));
-    content.appendChild(document.createTextNode("Ajouté avec succès au panier !"));
-    img.src = 'img/ok.png';
-    $(img).css({'float' : 'left'});
-    
-    div.appendChild(img);
-    div.appendChild(title);
-    div.appendChild(content);
-    
-    
-    panier.push(photo.id);
+    if (panier.indexOf(photo) == -1)
+    {
+        panier.push(photo.id);
+        showSuccessGrowlDiv(photo.id, "Ajouté avec succès au panier !" );
+    }
+    else
+    {
+        panier.unset(photo.id);
+        showSuccessGrowlDiv(photo.id, "Retiré avec succès au panier !" );
+    }
     
     document.getElementById('panierCount').innerHTML = panier.length;
-    
-    $.blockUI({ 
-            message: $(div), 
-            fadeIn: 700, 
-            fadeOut: 700, 
-            timeout: 2000, 
-            showOverlay: false, 
-            centerY: false, 
-            css: { 
-                width: '350px', 
-                top: '10px', 
-                left: '', 
-                right: '10px', 
-                border: 'none', 
-                padding: '5px', 
-                backgroundColor: '#000', 
-                'border-radius': '10px', 
-                opacity: .6, 
-                color: '#fff' 
-            } 
-        });
+       
 }
 
 function toggleMenu()
@@ -218,3 +245,50 @@ function toggleMenu()
     }
 }
 
+function showSuccessGrowlDiv(titleText, contentText)
+{
+    var div = document.createElement('div');
+    var title = document.createElement('h2');
+    var content = document.createElement('p');
+    var img = document.createElement('img');
+    
+    title.appendChild(document.createTextNode(titleText));
+    content.appendChild(document.createTextNode(contentText));
+    img.src = 'img/ok.png';
+    $(img).css({'float' : 'left'});
+    
+    div.appendChild(img);
+    div.appendChild(title);
+    div.appendChild(content);
+    
+    $.blockUI({ 
+            message: $(div), 
+            fadeIn: 700, 
+            fadeOut: 700, 
+            timeout: 2000, 
+            showOverlay: false, 
+            centerY: false, 
+            css: { 
+                width: '350px', 
+                top: '10px', 
+                left: '', 
+                right: '10px', 
+                border: 'none', 
+                padding: '5px', 
+                backgroundColor: '#000', 
+                'border-radius': '10px', 
+                opacity: .6, 
+                color: '#fff' 
+            } 
+        });
+}
+
+function showLoginModal()
+{
+    $( '#div_login' ).dialog( 'open' );
+}
+
+function showUploadModal()
+{
+    
+}

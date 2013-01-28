@@ -47,7 +47,7 @@
             <ul>
                 <li>Voir mon profil</li>
                 <li onclick='$( "#div_upload" ).dialog( "open" ); toggleMenu();'>Uploader une image</li>
-                <li>Se déconnecter</li>
+                <li onclick="logOut()">Se déconnecter</li>
             </ul>
         </div>
         
@@ -59,7 +59,7 @@
             <div id="searchfield">
                 <label for="search">Rechercher</label>
                 <input type="text" placeholder="Entrez un mot clé" id="searc" name="search" />
-                <img src="img/login.png" class="icon onclick" id="login" onclick="$( '#div_login' ).dialog( 'open' );"/>
+                <img src="img/login.png" class="icon onclick" id="login" onclick="showLoginModal()"/>
             </div>
         </header>
 

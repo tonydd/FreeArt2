@@ -1,8 +1,18 @@
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.fileupload.DiskFileUpload;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /*
  * To change this template, choose Tools | Templates
@@ -30,6 +40,46 @@ public class GImage {
                     out.println("</div>");
                     out.println("</div>");
                 }
+    }
+    
+    public static void uploadImage(HttpServletRequest request, HttpServletResponse response, String yourTempDirectory) throws IOException, Exception
+    {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        
+        DiskFileItemFactory fileItemFactory = new DiskFileItemFactory( ); 
+        ServletFileUpload upload = new ServletFileUpload( fileItemFactory );
+        int  yourMaxMemorySize = 40960 * 1024 * 8; // en bytes
+        int  yourMaxRequestSize = 81920 * 1024 * 8;
+        //String yourTempDirectory = getServletContext().getRealPath("/photos/");
+        fileItemFactory.setSizeThreshold( yourMaxMemorySize );
+        upload.setSizeMax(yourMaxRequestSize);                 
+        String photo = "null";
+        List items = upload.parseRequest(request);
+        Iterator iter = items.iterator();
+        while (iter.hasNext()) 
+        {
+           FileItem item = (FileItem) iter.next();
+           if (item.isFormField()) 
+           {
+                photo = item.getString();
+           }
+           else 
+           {
+            //String type = item.getName().toString();
+                //out.println(item.getName());
+                //String[] temp = type.split(".");               
+                //int index = temp.length;
+                //String extension = temp[index];
+                
+                //out.println(type);
+
+
+                File uploadedFile = new File(yourTempDirectory + '/' +  item.getName());
+                item.write(uploadedFile);
+                out.println(photo);
+            }
+       }
     }
     
     

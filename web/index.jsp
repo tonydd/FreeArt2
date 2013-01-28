@@ -9,9 +9,9 @@
 <jsp:include page="left.jsp" ></jsp:include>
     <div id="mainContainer">
             <h2 id="galleryTitle">
-                Galleries d'images - 
+                Galleries d'images <div style="font-style: italic; font-size: 0.8em; color: grey;">Page principale</div>
             </h2>
-             <div style="font-style: italic; font-size: 1em; color: grey;">Page principale</div>
+             
             <%
             //<a href="image.jpg" class="preview" title="Great looking landscape">Roll over to preview</a>
             //<a href="1.jpg" class="preview"><img src="1s.jpg" alt="gallery thumbnail" /></a>

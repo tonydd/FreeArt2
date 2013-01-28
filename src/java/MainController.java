@@ -118,63 +118,34 @@ public class MainController extends HttpServlet {
         
         if ("login".equals(action))
         {
-            if(Login.login(request.getParameter("txt_login"), request.getParameter("txt_passwd")))
+            System.out.println(request.getParameter("txt_login"));
+            System.out.println(request.getParameter("txt_password"));
+            System.out.println("-----------------------------------------------------------------");
+            Personne p = GPersonne.login(request, request.getParameter("txt_login"), request.getParameter("txt_password"));
+            
+            if(p != null)
             {
-                out.println("ciboulette");
+                System.out.println(p.toString());
+                out.print("OK");
             }
             else
             {
-                out.println("KO");
+                out.print("KO");
             }
         }
         
         else //UPLOAD
         {
-                    try {
-                        
-                        DiskFileItemFactory fileItemFactory = new DiskFileItemFactory( );
-                        
-                        ServletFileUpload upload = new ServletFileUpload( fileItemFactory );
-                        
-                        // Set upload parameters
-                        int  yourMaxMemorySize = 4096 * 1024 * 8; // en bytes
-                        int  yourMaxRequestSize = 8192 * 1024 * 8;
-                        String yourTempDirectory = getServletContext().getRealPath("/photos");
-
-                        fileItemFactory.setSizeThreshold( yourMaxMemorySize );
-                        upload.setSizeMax( yourMaxRequestSize );
-                        
-                        String photo = "";
-                        
-                        List items = upload.parseRequest(request);
-                        Iterator iter = items.iterator();
-                        while (iter.hasNext()) 
-                        {
-                           FileItem item = (FileItem) iter.next();
-                           if (item.isFormField()) {
-                                 String name = item.getFieldName();
-                                String value = item.getString();
-                                photo = item.getString();
-                                out.println(name + " | " + value);
-                           }
-                           else {
-					// Handle Uploaded files.
-					out.println("Field Name = " + item.getFieldName()
-							+ ", File Name = " + item.getName()
-							+ ", Content type = " + item.getContentType()
-							+ ", File Size = " + item.getSize());
-					/*
-					 * Write file to the ultimate location.
-					 */
-					File uploadedFile = new File(yourTempDirectory + photo);
-                                        item.write(uploadedFile);
-				}
-                       }
-                        
-                    } catch (Exception ex) {
-                        out.println(ex);
-                        //Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+            try 
+            {
+                String yourTempDirectory = getServletContext().getRealPath("/photos/");
+                GImage.uploadImage(request, response, yourTempDirectory);
+            } 
+            catch (Exception ex) 
+            {
+                out.println(ex);
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            }
             
         }
         

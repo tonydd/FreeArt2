@@ -56,7 +56,6 @@ public class Categorie {
         {
                 System.out.println("DRIVER : " + Driver.class.getName());
                 Class.forName("com.mysql.jdbc.Driver");
-                System.out.println("/\\ Connected /\\");
                 Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
                 Statement stmt = connec.createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM CATEGORIE");
