@@ -36,7 +36,7 @@ public class GPersonne {
         
     }
     
-    public void logout(HttpServletRequest request)
+    public static void logout(HttpServletRequest request)
     {
         HttpSession session = request.getSession();
         session.setAttribute("Logged", null);

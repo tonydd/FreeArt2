@@ -3,6 +3,7 @@
  * and open the template in the editor.
  */
 
+
 if (!Array.prototype.indexOf)
 {
   Array.prototype.indexOf = function(elt /*, from*/)
@@ -42,6 +43,7 @@ $(document).ajaxStart(function()
 .ajaxStop($.unblockUI);
 
 var panier = Array();
+var lastImageId = 0; var lastImageData = Array();
 
 $(document).ready(function () 
 {
@@ -56,8 +58,10 @@ $(document).ready(function ()
        $(this).next().fadeOut(250); 
     });
     
+    $("div#mainContainer").niceScroll();
     
-    /* --- Chargement des catégories --- */
+    
+    /* --- Chargement des catégories pour le menu de gauche --- */
     
     $.get(
         'MainController',
@@ -69,19 +73,23 @@ $(document).ready(function ()
             $("ul#categories").html(data);
         }
     );
-    
         
-    /* --- TEMP --- Chargement jeu essai images --- */
-   $.get(
+    /* --- Chargement des catégories pour le menu déroulant upload --- */
+    
+    $.get(
         'MainController',
         {
-            data : "images"
+            data : "categories_select"
         },
         function(data)
         {
-            $("div#mainContainer").append(data);
+            $("#id_categorie").html(data);
         }
     );
+    
+        
+    /* ---Chargement des images les plus récentes au lancement --- */
+     refreshMain();
     
      $( "#div_login" ).dialog({
             autoOpen: false,
@@ -120,7 +128,7 @@ $(document).ready(function ()
             close: function() {
                 $( this ).dialog( "close" );
             }
-        });
+        });        
 });
 
 function unblockUI()
@@ -188,6 +196,7 @@ function sendPic(formData)
             {
                 $( "#div_upload" ).dialog( 'close' );
                 window.setTimeout(function() {showSuccessGrowlDiv(data, "Uploadé avec succès")}, 500);
+                refreshMain();
             },
             data: formData,
             cache: false,
@@ -270,7 +279,7 @@ function showSuccessGrowlDiv(titleText, contentText)
             centerY: false, 
             css: { 
                 width: '350px', 
-                top: '10px', 
+                top: '5.5%', 
                 left: '', 
                 right: '10px', 
                 border: 'none', 
@@ -291,4 +300,75 @@ function showLoginModal()
 function showUploadModal()
 {
     
+}
+
+function refreshMain()
+{
+    $.get(
+        'MainController',
+        {
+            data : "images"
+        },
+        function(data)
+        {
+            $("div#mainContainer").html(data);
+            makeTooltip();
+        }
+    );
+}
+
+function getByCategorie(catId)
+{
+    $.get(
+        'MainController',
+        {
+            data : "images",
+            categorie : catId
+        },
+        function(data)
+        {
+            $("div#mainContainer").html(data);
+        }
+    );
+}
+
+function makeTooltip()
+{
+    $( document ).tooltip({
+      items: "img.display",
+      track: true,
+      content: function() 
+      {
+        var photoId = $( this ).attr('id');
+        if (photoId != lastImageId)
+        {
+            $.get(
+                'MainController',
+                {
+                    data : "details",
+                    imgId : photoId
+                },
+                function(data)
+                {
+                    lastImageId = photoId;
+                    var split = data.split("$");//NOM - DATE - DESC - CAT - PSEUDO
+                    
+                    var date = format(split[1])
+                    
+                    lastImageData = '<div><h1 align="center">' + split[0] + '</h1><p><b>Ajouté : </b>' + date + '</p><p><b>Description : </b>' + split[2] + '</p><p><b>Catégorie : </b>' + split[3] + '</p><p><b>Par : </b>' + split[4] + '</p></div>';
+                    return lastImageData;
+                });
+        }
+        else
+        {
+            return lastImageData;
+        }
+      }
+    });
+}
+
+function format(date)
+{
+    var split = date.split('-');
+    return split[2] + '/' + split[1] + '/' + split[0];
 }

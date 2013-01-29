@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -82,16 +83,41 @@ public class MainController extends HttpServlet {
         if ("categories".equals(data))
         {
             ArrayList<Categorie> cat = Categorie.getCategories();
-//            out.println("lol : " + cat);
             for (Categorie c : cat)
             {
                 out.println("<li onclick=\"changeCategorie(this)\" id=\"" + c.getId() + "\" >" + c.getCategorie() + "</li>");
             }
         }
         
+        else if ("categories_select".equals(data))
+        {
+            ArrayList<Categorie> cat = Categorie.getCategories();
+            for (Categorie c : cat)
+            {
+                out.println("<option value=\"" + c.getId() + "\" >" + c.getCategorie() + "</li>");
+            }
+        }
+        
+        else if ("details".equals(data))
+        {
+            try {
+                GImage.getImageDetails(Integer.parseInt(request.getParameter("imgId")), out);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
         else if ("images".equals(data))
         {
-            GImage.getImages(request, response);
+            try {
+                GImage.getLastImages(request, response);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParseException ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
         out.close();
@@ -118,14 +144,9 @@ public class MainController extends HttpServlet {
         
         if ("login".equals(action))
         {
-            System.out.println(request.getParameter("txt_login"));
-            System.out.println(request.getParameter("txt_password"));
-            System.out.println("-----------------------------------------------------------------");
-            Personne p = GPersonne.login(request, request.getParameter("txt_login"), request.getParameter("txt_password"));
-            
+            Personne p = GPersonne.login(request, request.getParameter("txt_login"), request.getParameter("txt_password")); 
             if(p != null)
             {
-                System.out.println(p.toString());
                 out.print("OK");
             }
             else
@@ -133,7 +154,10 @@ public class MainController extends HttpServlet {
                 out.print("KO");
             }
         }
-        
+        else if ("logout".equals(action))
+        {
+            GPersonne.logout(request);
+        }
         else //UPLOAD
         {
             try 

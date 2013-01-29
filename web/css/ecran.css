@@ -137,11 +137,18 @@ div.display
 {
     margin : 1%;
     display: inline-block;
+    
 }
 
 img.display{
     width: 300px;
     height: auto;
+    border: 2px solid gainsboro;
+}
+
+img.display:hover
+{
+    cursor: pointer;
 }
 
 img.icon
@@ -202,9 +209,15 @@ div#div_login
 
 div.actions
 {
-    border-radius: 5px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
     background-color: gainsboro;
     margin-top: -5px;
+    min-height: 50px;
+    width: 304px;
+    min-width: 304px;
+    max-width: 304px;
+    overflow: hidden;
 }
     img.action
     {
@@ -265,3 +278,16 @@ div#div_menu
     .hide{
         display: none;
     }
+    
+img.preview
+{
+    width: 500px;
+    height: auto;
+}
+
+.ui-tooltip 
+{
+    opacity: 0.7;
+    background-color: black;
+    color: white;
+}

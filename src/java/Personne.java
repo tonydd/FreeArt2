@@ -71,6 +71,11 @@ public class Personne
         return this.mail;
     }
     
+    public int getId()
+    {
+        return this.id;
+    }
+    
     static Personne getPersonneWithUsrAndPasswd(Personne p) 
     {
         Personne res = null;
