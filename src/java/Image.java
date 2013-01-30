@@ -21,6 +21,7 @@ import java.util.Date;
  * @author Tony
  */
 public class Image {
+  
     private int id;
     private int idCategorie;
     private String nomImage;
@@ -194,6 +195,56 @@ public class Image {
             {
                 res.add("Non trouvé");
             }
+        }
+        
+        return res;
+    }
+    
+    static ArrayList<Image> search(String exp) throws ClassNotFoundException, SQLException, ParseException 
+    {
+        ArrayList<Image> res = new ArrayList<Image>();
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
+        
+        Statement stmt = connec.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM IMAGE WHERE NOMIMAGE LIKE '%" + exp + "%'");
+              
+        
+        while (rs.next())
+        {
+            res.add(new Image(
+                    rs.getInt("IDIMAGE"),
+                    rs.getInt("IDCATEGORIE"),
+                    rs.getString("NOMIMAGE"),
+                    rs.getString("DESCRIPTION"),
+                    rs.getString("PATH"),
+                    rs.getString("DATECREATION")
+            ));
+        }
+        
+        return res;
+    }
+    
+    static ArrayList<Image> getImagesByCategorie(int categorie) throws ClassNotFoundException, SQLException, ParseException 
+    {
+        ArrayList<Image> res = new ArrayList<Image>();
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
+        
+        Statement stmt = connec.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM IMAGE WHERE IDCATEGORIE = " + categorie);
+              
+        
+        while (rs.next())
+        {
+            res.add(new Image(
+                    rs.getInt("IDIMAGE"),
+                    rs.getInt("IDCATEGORIE"),
+                    rs.getString("NOMIMAGE"),
+                    rs.getString("DESCRIPTION"),
+                    rs.getString("PATH"),
+                    rs.getString("DATECREATION")
+            ));
         }
         
         return res;

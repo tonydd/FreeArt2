@@ -41,7 +41,7 @@ public class GImage {
             out.println("<div class=\"actions\">");
             out.println(i.getNomImage());
             out.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" />");
-            out.println("<img src=\"img/addPanier.png\" class=\"action\" title=\"Ajouter au panier\" id=\"Photo test\" onclick=\"addArticleToPanier(this)\" />");
+            out.println("<img src=\"img/addPanier.png\" class=\"action\" title=\"Ajouter au panier\" id=\"" + i.getId() + "\" onclick=\"addArticleToPanier(this)\" />");
             out.println("</div>");
             out.println("</div>");
         }
@@ -123,5 +123,47 @@ public class GImage {
         }
     }
     
-    
+    static void search(String exp, PrintWriter stream) throws ClassNotFoundException, ParseException 
+    {
+        ArrayList<Image> found = new ArrayList<Image>();
+        try {
+            found = Image.search(exp);
+        } catch (SQLException ex) {
+            Logger.getLogger(GImage.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        for (Image i : found)
+        {
+            stream.println("<div class=\"display\" >");
+            stream.println("<img src=\"photos/" + i.getPath() +"\" class=\"display\" id=\"" + i.getId() + "\" /> ");
+            stream.println("<div class=\"actions\">");
+            stream.println(i.getNomImage());
+            stream.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" />");
+            stream.println("<img src=\"img/addPanier.png\" class=\"action\" title=\"Ajouter au panier\" id=\"" + i.getId() + "\" onclick=\"addArticleToPanier(this)\" />");
+            stream.println("</div>");
+            stream.println("</div>");
+        }
+    }
+
+    static void getImagesByCategorie(int categorie, PrintWriter stream) throws ClassNotFoundException, ParseException 
+    {
+        ArrayList<Image> imgCategorie = new ArrayList<Image>();
+        try {
+            imgCategorie = Image.getImagesByCategorie(categorie);
+        } catch (SQLException ex) {
+            Logger.getLogger(GImage.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        for (Image i : imgCategorie)
+        {
+            stream.println("<div class=\"display\" >");
+            stream.println("<img src=\"photos/" + i.getPath() +"\" class=\"display\" id=\"" + i.getId() + "\" /> ");
+            stream.println("<div class=\"actions\">");
+            stream.println(i.getNomImage());
+            stream.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" />");
+            stream.println("<img src=\"img/addPanier.png\" class=\"action\" title=\"Ajouter au panier\" id=\"" + i.getId() + "\" onclick=\"addArticleToPanier(this)\" />");
+            stream.println("</div>");
+            stream.println("</div>");
+        }
+    }
 }

@@ -18,6 +18,9 @@
     </head>
     <body>
         
+        <div id="spinner" class="hide">
+            <img src="img/spinner2-black.gif" style="width: 50px;" />
+        </div>
         
         <div id="div_login" title="Connexion à votre compte utilisateur">
             <form id="form_login">
@@ -28,6 +31,29 @@
                 
                 <label for="txt_password">Mot de passe : </label>
                 <input type="password" id="txt_password" values="txt_password" value="1234" />
+            </form>
+        </div>
+        
+        <div id="div_subscribe" title="Inscription à FreeArt">
+            <form id="form_subscribe">
+                <table>
+                    <tr>
+                        <td><label for="txt_create_login">Login : </label></td>
+                        <td><input type="text" id="txt_create_login" name="txt_create_login" value="" /></td>
+                    </tr>
+                    <tr>        
+                        <td><label for="txt_create_password">Mot de passe : </label></td>
+                        <td><input type="password" id="txt_create_password" value="" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="txt_create_password2">Confirmez mot de passe : </label></td>
+                        <td><input type="password" id="txt_create_password2"  value="" /></td>
+                    </tr>
+                    <tr>
+                        <td><label for="txt_create_mail">Adresse e-mail </label></td>
+                        <td><input type="text" id="txt_create_mail"  value="" /></td>
+                    </tr>
+                </table>
             </form>
         </div>
         
@@ -60,20 +86,22 @@
         
         <div id="div_menu" class="hide">
             <ul>
-                <li>Voir mon profil</li>
-                <li onclick='$( "#div_upload" ).dialog( "open" ); toggleMenu();'>Uploader une image</li>
-                <li onclick="logOut()">Se déconnecter</li>
+                <li class="menuItem">Voir mon profil</li>
+                <li class="menuItem" onclick='$( "#div_upload" ).dialog( "open" ); toggleMenu();'>Uploader une image</li>
+                <li class="menuItem" onclick='usrImages();'>Gérer mes images</li>
+                <li class="menuItem">Random fonction</li>
+                <li class="menuItem" onclick="logOut()">Se déconnecter</li>
             </ul>
         </div>
         
         <header>
             <!--<img id="logo" src="img/FreeArt.png" />-->
-            <h1 style="font-variant: small-caps; font-style: oblique ;">
+            <h1 style="font-variant: small-caps; font-style: oblique ;" id="mainTitle" onclick="index();">
                FreeArt : Contribuez à l'art en ligne
             </h1>
             <div id="searchfield">
                 <label for="search">Rechercher</label>
-                <input type="text" placeholder="Entrez un mot clé" id="searc" name="search" />
+                <input type="text" placeholder="Entrez un mot clé" id="search" name="search" onkeyup="search(this);" />
                 <img src="img/login.png" class="icon onclick" id="login" onclick="showLoginModal()"/>
             </div>
         </header>

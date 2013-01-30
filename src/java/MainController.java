@@ -107,6 +107,30 @@ public class MainController extends HttpServlet {
             }
         }
         
+        else if ("imgCategorie".equals(data))
+        {
+            try {
+                GImage.getImagesByCategorie(Integer.parseInt(request.getParameter("categorie")), out);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParseException ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        else if ("search".equals(data))
+        {
+            try {
+                try {
+                    GImage.search(request.getParameter("exp"), out);
+                } catch (ParseException ex) {
+                    Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
         else if ("images".equals(data))
         {
             try {

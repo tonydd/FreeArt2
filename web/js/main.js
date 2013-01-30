@@ -38,9 +38,13 @@ if (!Array.prototype.indexOf)
 
 $(document).ajaxStart(function()
 {
-    $.blockUI({ message: '<img src="img/ajax_spinner.gif" />' })
+    //$.blockUI({ message: '<img src="img/ajax_spinner.gif" />' })
+    $("div#spinner").toggleClass('hide');
 })
-.ajaxStop($.unblockUI);
+.ajaxStop(function()
+{
+    $("div#spinner").toggleClass('hide');
+});
 
 var panier = Array();
 var lastImageId = 0; var lastImageData = Array();
@@ -90,6 +94,24 @@ $(document).ready(function ()
         
     /* ---Chargement des images les plus récentes au lancement --- */
      refreshMain();
+     
+     $( "#div_subscribe" ).dialog({
+            autoOpen: false,
+            height: 300,
+            width: 500,
+            modal: true,
+            buttons: {
+                "Annuler": function() {
+                    $( this ).dialog( "close" );
+                },
+                "Inscription" : function() {
+                    subscribe();
+                }
+            },
+            close: function() {
+                $( this ).dialog( "close" );
+            }
+        });
     
      $( "#div_login" ).dialog({
             autoOpen: false,
@@ -99,6 +121,7 @@ $(document).ready(function ()
             buttons: {
                 "Pas encore inscrit ?": function() {
                     $( this ).dialog( "close" );
+                    $( '#div_subscribe' ).dialog( 'open' );
                 },
                 "Se connecter" : function() {
                     logUser();
@@ -128,7 +151,8 @@ $(document).ready(function ()
             close: function() {
                 $( this ).dialog( "close" );
             }
-        });        
+        });      
+       
 });
 
 function unblockUI()
@@ -155,7 +179,7 @@ function logUser()
                 $( "#div_login" ).dialog( 'close' );
                 document.getElementById('login').setAttribute('src', "img/ok.png");
                 document.getElementById('login').onclick = toggleMenu;
-                window.setTimeout(function() {showSuccessGrowlDiv("Login", "Vous êtes maintenant identifiés")}, 500);                
+                window.setTimeout(function() {showGrowlDiv('success', "Login", "Vous êtes maintenant identifiés")}, 250);                
             }
             else
             {
@@ -178,7 +202,7 @@ function logOut()
         {
             document.getElementById('login').setAttribute('src', "img/login.png");
             document.getElementById('login').onclick = showLoginModal;
-            window.setTimeout(function() {showSuccessGrowlDiv("Logout", "Vous êtes maintenant déconnecté")}, 500);                
+            window.setTimeout(function() {showGrowlDiv("success", "Logout", "Vous êtes maintenant déconnecté")}, 250);                
         }
     );
 }
@@ -195,7 +219,7 @@ function sendPic(formData)
             success: function(data)
             {
                 $( "#div_upload" ).dialog( 'close' );
-                window.setTimeout(function() {showSuccessGrowlDiv(data, "Uploadé avec succès")}, 500);
+                window.setTimeout(function() {showGrowlDiv("success",data, "Uploadé avec succès")}, 250);
                 refreshMain();
             },
             data: formData,
@@ -205,17 +229,17 @@ function sendPic(formData)
         });
 }
 
-function addToPanier(photo)
+function addArticleToPanier(photo)
 {
-    if (panier.indexOf(photo) == -1)
+    if (panier.indexOf(photo.id) == -1)
     {
         panier.push(photo.id);
-        showSuccessGrowlDiv(photo.id, "Ajouté avec succès au panier !" );
+        showGrowlDiv("success","Notification", "L'image à été ajoutée avec succès au panier !" );
     }
     else
     {
         panier.unset(photo.id);
-        showSuccessGrowlDiv(photo.id, "Retiré avec succès au panier !" );
+        showGrowlDiv("success","Notification", "L'image à été retirée avec succès au panier !" );
     }
     
     document.getElementById('panierCount').innerHTML = panier.length;
@@ -229,7 +253,7 @@ function toggleMenu()
         $("div#div_menu").removeClass('hide');
         $("div#div_menu").animate(
         {
-            'height' : '200px',
+            'height' : '205px',
             'opacity' : '0.7'
             },
             500,
@@ -254,7 +278,7 @@ function toggleMenu()
     }
 }
 
-function showSuccessGrowlDiv(titleText, contentText)
+function showGrowlDiv(type, titleText, contentText)
 {
     var div = document.createElement('div');
     var title = document.createElement('h2');
@@ -263,7 +287,12 @@ function showSuccessGrowlDiv(titleText, contentText)
     
     title.appendChild(document.createTextNode(titleText));
     content.appendChild(document.createTextNode(contentText));
-    img.src = 'img/ok.png';
+    
+    if (type === 'success')
+        img.src = 'img/ok.png';
+    else if (type === 'error')
+        img.src = 'img/ko.png';
+    
     $(img).css({'float' : 'left'});
     
     div.appendChild(img);
@@ -333,7 +362,7 @@ function getByCategorie(catId)
 }
 
 function makeTooltip()
-{
+{/*
     $( document ).tooltip({
       items: "img.display",
       track: true,
@@ -364,11 +393,96 @@ function makeTooltip()
             return lastImageData;
         }
       }
-    });
+    });*/
 }
 
 function format(date)
 {
     var split = date.split('-');
     return split[2] + '/' + split[1] + '/' + split[0];
+}
+
+function search(input)
+{
+    var exp = input.value;
+    if (exp.length >= 2)
+    {
+        
+        $.get(
+            'MainController',
+             {
+                data : 'search',
+                exp: exp
+             },
+            function(data)
+            {               
+                $("div#mainContainer").html(data);
+                makeTooltip();
+            });
+            
+            previousExp = exp.length;
+    }
+    else
+    {
+        if (previousExp == 2)
+        {
+            refreshMain();
+        }
+        previousExp = exp.length;
+    }
+}
+
+var previousExp = 0;
+
+function deselectAllCategories()
+{
+    $("div#left ul li").each(function()
+    {
+       $(this).removeClass('selected'); 
+    });
+}
+
+function changeCategorie(clicked)
+{
+    var catId = clicked.id;
+    deselectAllCategories();
+    $(clicked).addClass('selected');
+    
+    $.get(
+            'MainController',
+             {
+                data : 'imgCategorie',
+                categorie: catId
+             },
+            function(data)
+            {               
+                $("div#mainContainer").html(data);
+                makeTooltip();
+            });
+}
+
+function index()
+{
+    deselectAllCategories();
+    refreshMain();
+}
+
+function subscribe()
+{
+    var login = $("#txt_create_login").val();
+    var pass1 = $("#txt_create_password").val();
+    var pass2 = $("#txt_create_password2").val();
+    var mail = $("#txt_create_mail").val();
+    
+    if (login === '' || pass1 === '' || pass2 === '' || mail === '')
+    {
+        showGrowlDiv("error", "Erreur de saisie", "Un champ demeure vide !");
+        return null;
+    }
+    
+    if (pass2 != pass1)
+    {
+        showGrowlDiv("error", "Erreur mot de passe", "Les deux champs ne sont pas identiques !");
+        return null;
+    }
 }
