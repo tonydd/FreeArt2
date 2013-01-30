@@ -99,7 +99,7 @@ public class GImage {
                 
                 Image create = new Image(catId, photo, desc, imgPath );
                 
-                Image.save(create, user);
+                create.save(user);
                 
                 System.out.println(create);
                 item.write(uploadedFile);

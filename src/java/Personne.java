@@ -2,6 +2,7 @@
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -23,6 +24,8 @@ public class Personne
     private     String   pseudo;
     private     String   password;
     private     String   mail;
+    
+    static final String WRITE_PERSONNE = "INSERT INTO personne(PSEUDO, PASSWORD, ADRESSEEMAIL) VALUES ( ?, ?, ?)";
     
     public Personne ()
     {
@@ -78,7 +81,7 @@ public class Personne
         return this.id;
     }
     
-    static Personne getPersonneWithUsrAndPasswd(Personne p) 
+    public Personne getPersonneWithUsrAndPasswd() 
     {
         Personne res = null;
         try 
@@ -87,7 +90,7 @@ public class Personne
                 Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
                 
                 Statement stmt = connec.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM PERSONNE WHERE PSEUDO = '" + p.getPseudo() + "' AND PASSWORD = '" + p.getPassword() + "'");
+                ResultSet rs = stmt.executeQuery("SELECT * FROM PERSONNE WHERE PSEUDO = '" + this.getPseudo() + "' AND PASSWORD = '" + this.getPassword() + "'");
                 if (rs.next())
                 {
                     res = new Personne(
@@ -112,6 +115,30 @@ public class Personne
     public String toString()
     {
         return this.getPseudo() + " => " + this.getMail() + " (" + this.getPassword() + ")";
+    }
+
+    public boolean save() 
+    {
+        try 
+            {
+                Class.forName("com.mysql.jdbc.Driver");
+                Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
+                PreparedStatement writeUser = connec.prepareStatement(WRITE_PERSONNE);
+                
+                writeUser.setString(1, this.getPseudo());
+                writeUser.setString(2, this.getPassword());
+                writeUser.setString(3, this.getMail());
+                
+                writeUser.executeUpdate();
+                
+                return true;
+            }
+            catch (Exception e)
+            {
+                System.out.println("/\\ Fail /\\");
+                System.out.println(e);
+                return false;
+            }
     }
     
 }

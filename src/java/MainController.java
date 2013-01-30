@@ -168,20 +168,18 @@ public class MainController extends HttpServlet {
         
         if ("login".equals(action))
         {
-            Personne p = GPersonne.login(request, request.getParameter("txt_login"), request.getParameter("txt_password")); 
-            if(p != null)
-            {
-                out.print("OK");
-            }
-            else
-            {
-                out.print("KO");
-            }
+            GPersonne.login(request, request.getParameter("txt_login"), request.getParameter("txt_password"), out);           
         }
         else if ("logout".equals(action))
         {
             GPersonne.logout(request);
         }
+        
+        else if ("subscribe".equals(action))
+        {
+            GPersonne.createUser(request.getParameter("login"), request.getParameter("password"), request.getParameter("mail"), out);
+        }
+        
         else //UPLOAD
         {
             try 

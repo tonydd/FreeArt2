@@ -117,22 +117,22 @@ public class Image {
         return res;
     }
     
-    static void save(Image create, Personne user) throws ClassNotFoundException, SQLException 
+    void save( Personne user) throws ClassNotFoundException, SQLException 
     {
         Class.forName("com.mysql.jdbc.Driver");
         Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
         PreparedStatement writeImage = connec.prepareStatement(WRITE_IMAGE);
         PreparedStatement writeAssociation = connec.prepareStatement(WRITE_ASSOCIATION);
         
-        writeImage.setInt(1, create.getCategorieId());
-        writeImage.setString(2, create.getNomImage());
-        writeImage.setString(3, create.getCreationDate());
-        writeImage.setString(4, create.getDescription());
-        writeImage.setString(5, create.getPath());
+        writeImage.setInt(1, this.getCategorieId());
+        writeImage.setString(2, this.getNomImage());
+        writeImage.setString(3, this.getCreationDate());
+        writeImage.setString(4, this.getDescription());
+        writeImage.setString(5, this.getPath());
         
         writeImage.executeUpdate();
         
-        int newImageId = Image.GetImageId(create);
+        int newImageId = this.GetImageId();
         if (newImageId != 0)
         {
             writeAssociation.setInt(1, user.getId());
@@ -146,13 +146,13 @@ public class Image {
         
     }
     
-    static int GetImageId(Image i) throws ClassNotFoundException, SQLException
+    int GetImageId() throws ClassNotFoundException, SQLException
     {
         Class.forName("com.mysql.jdbc.Driver");
         Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
         
         Statement stmt = connec.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT IDIMAGE FROM image WHERE NOMIMAGE = '" + i.getNomImage() + "' AND PATH = '" + i.getPath() + "'");
+        ResultSet rs = stmt.executeQuery("SELECT IDIMAGE FROM image WHERE NOMIMAGE = '" + this.getNomImage() + "' AND PATH = '" + this.getPath() + "'");
         if (rs.next())
         {
             return rs.getInt(1);

@@ -62,7 +62,7 @@ $(document).ready(function ()
        $(this).next().fadeOut(250); 
     });
     
-    $("div#mainContainer").niceScroll();
+    //$("div#mainContainer").niceScroll();
     
     
     /* --- Chargement des catégories pour le menu de gauche --- */
@@ -95,6 +95,7 @@ $(document).ready(function ()
     /* ---Chargement des images les plus récentes au lancement --- */
      refreshMain();
      
+     /* --- Creation des fenetres modales --*/
      $( "#div_subscribe" ).dialog({
             autoOpen: false,
             height: 300,
@@ -144,7 +145,6 @@ $(document).ready(function ()
                 "Soumettre" : function() {
                     var form = document.getElementById('form_upload');//new FormData($('#form_file'));
                     var formData = new FormData(form);
-                    console.log(formData);
                     sendPic(formData);
                 }
             },
@@ -173,18 +173,17 @@ function logUser()
         },
         function(data)
         {
-            console.log(data);
-            if (data == "OK")
+            if (data != "KO")
             {
                 $( "#div_login" ).dialog( 'close' );
                 document.getElementById('login').setAttribute('src', "img/ok.png");
                 document.getElementById('login').onclick = toggleMenu;
-                window.setTimeout(function() {showGrowlDiv('success', "Login", "Vous êtes maintenant identifiés")}, 250);                
+                window.setTimeout(function() {showGrowlDiv('success', "Bienvenue " + data, "Vous êtes maintenant identifiés")}, 250);                
             }
             else
             {
                 $( "#div_login" ).dialog( 'close' );
-                alert("LOGIN FAILED");
+                window.setTimeout(function() {showGrowlDiv('error', "Erreur !", "Vous n'avez pas pû être identifié !")}, 250); 
             }
         }
     );
@@ -242,7 +241,18 @@ function addArticleToPanier(photo)
         showGrowlDiv("success","Notification", "L'image à été retirée avec succès au panier !" );
     }
     
-    document.getElementById('panierCount').innerHTML = panier.length;
+    var length = panier.length
+    
+    document.getElementById('panierCount').innerHTML = length + '&nbsp;&nbsp;';
+    
+    if (length > 0)
+    {
+        $("a#accesPanier").removeClass('hide');
+    }
+    else
+    {
+        $("a#accesPanier").addClass('hide');
+    }
        
 }
 
@@ -485,4 +495,24 @@ function subscribe()
         showGrowlDiv("error", "Erreur mot de passe", "Les deux champs ne sont pas identiques !");
         return null;
     }
+    
+    /* AUTRE TESTS A FAIRE ... */
+    
+    $( "#div_subscribe" ).dialog( "close" );
+    
+    $.post(
+    'MainController',
+    {
+        action: 'subscribe',
+        login : login,
+        password : pass1,
+        mail: mail
+    },
+    function(data)
+    {
+        if (data === 'OK')
+            showGrowlDiv("success", "Utilisateur crée", "Vous pouvez maintenant vous connecter !");     
+        else
+            showGrowlDiv("error", "Utilisateur en attente", "Une erreure est suvenue durant la création !");     
+    });
 }

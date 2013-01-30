@@ -17,7 +17,7 @@ import javax.servlet.http.HttpSession;
  * @author Tony
  */
 public class GPersonne {
-    public static Personne login(HttpServletRequest request ,String usrName, String passwd)
+    public static void login(HttpServletRequest request ,String usrName, String passwd, PrintWriter out)
     {
         Personne p = new Personne();
         p.setPseudo(usrName);
@@ -25,18 +25,17 @@ public class GPersonne {
         
         System.out.println(passwd);
         
-        p = Personne.getPersonneWithUsrAndPasswd(p);
+        p = p.getPersonneWithUsrAndPasswd();
         
-        
-        if (p != null) //exists renvoi une personne complète si existe, null sinon
+        if(p != null)
         {
             HttpSession session = request.getSession();
             session.setAttribute("Logged", p);
-            return p;
+            out.print(p.getPseudo());
         }
         else
         {
-            return null;
+            out.print("KO");
         }
         
     }
@@ -45,6 +44,23 @@ public class GPersonne {
     {
         HttpSession session = request.getSession();
         session.setAttribute("Logged", null);
+    }
+
+    static void createUser(String pseudo, String pass, String mail, PrintWriter out) 
+    {
+        Personne p = new Personne();
+        p.setPseudo(pseudo);
+        p.setPassword(pass);
+        p.setMail(mail);
+        
+        if (p.save())
+        {
+            out.print("OK");
+        }
+        else
+        {
+            out.print("KO");
+        }
     }
     
 }
