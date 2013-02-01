@@ -84,11 +84,15 @@
             </form>
         </div>
         
+        <div id="div_delete_user" title="Etes-vous sûr de vouloir supprimer votre compte utilisateur ?">
+            <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>Cette opération est irrévérsible, elle détruira aussi toutes les photos que vous avez uploadé, <br />Etes-vous sûr de vouloir continuer ?</p>
+        </div>
+        
         <div id="div_menu" class="hide">
             <ul>
-                <li class="menuItem">Voir mon profil</li>
-                <li class="menuItem" onclick='$( "#div_upload" ).dialog( "open" ); toggleMenu();'>Uploader une image</li>
-                <li class="menuItem" onclick='usrImages();'>Gérer mes images</li>
+                <li class="menuItem" onclick="showUserProfil();">Voir mon profil</li>
+                <li class="menuItem" onclick='$( "#div_upload" ).dialog( "open" );'>Uploader une image</li>
+                <li class="menuItem" onclick='managePictures();'>Gérer mes images</li>
                 <li class="menuItem">Random fonction</li>
                 <li class="menuItem" onclick="logOut()">Se déconnecter</li>
             </ul>

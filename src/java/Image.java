@@ -8,6 +8,8 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -21,7 +23,7 @@ import java.util.Date;
  * @author Tony
  */
 public class Image {
-  
+
     private int id;
     private int idCategorie;
     private String nomImage;
@@ -33,12 +35,20 @@ public class Image {
     static final String WRITE_IMAGE = "INSERT INTO image(IDCATEGORIE, NOMIMAGE, DATECREATION, DESCRIPTION, PATH) VALUES ( ?, ?, ?, ?, ?)";
     static final String WRITE_ASSOCIATION = "INSERT INTO met_en_ligne(IDPERSONNE, IDIMAGE) VALUES ( ?, ?)";
     
+    static final String DELETE_IMAGE = "DELETE FROM image WHERE IDIMAGE = ?";
+    static final String DELETE_ASSOCIATION = "DELETE FROM met_en_ligne WHERE IDIMAGE = ?";
+    
     static final String format = "yy-MM-dd"; 
     static final java.text.SimpleDateFormat formater = new java.text.SimpleDateFormat( format );
     
     public Image()
     {
         
+    }
+    
+    public Image(int id)
+    {
+        this.id = id;
     }
     
     public Image(int idCat, String nom, String description, String path)
@@ -93,6 +103,12 @@ public class Image {
     {
         return this.idCategorie;
     }
+    
+    public void setPath(String path)
+    {
+        this.path = path;
+    }
+    
     
     static ArrayList<Image> getLastImages() throws ClassNotFoundException, SQLException, SQLException, ParseException 
     {
@@ -161,19 +177,20 @@ public class Image {
         return 0;
     }
     
-    static ArrayList<String> getImageDetails(int id) throws ClassNotFoundException, SQLException 
+    public ArrayList<String> getImageDetails() throws ClassNotFoundException, SQLException 
     {
         ArrayList<String> res = new ArrayList<String>();
         Class.forName("com.mysql.jdbc.Driver");
         Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
         
         Statement stmt = connec.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM IMAGE WHERE IDIMAGE = " + id);
+        ResultSet rs = stmt.executeQuery("SELECT * FROM IMAGE WHERE IDIMAGE = " + this.id);
         if (rs.next())
         {
             res.add(rs.getString(3));//NOM
             res.add(rs.getString(4));//DATECREATION
             res.add(rs.getString(6));//DESCRIPTION
+            res.add(rs.getString(7));//PATH
             
             ResultSet rs2 = stmt.executeQuery("SELECT NOMCATEGORIE FROM categorie WHERE IDCATEGORIE = " + rs.getInt(2));
             if (rs2.next())
@@ -198,6 +215,30 @@ public class Image {
         }
         
         return res;
+    }
+    
+    public boolean deleteImage()
+    {
+        try 
+        {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
+            PreparedStatement deleteImage = connec.prepareStatement(DELETE_IMAGE);
+            PreparedStatement deleteAssociation = connec.prepareStatement(DELETE_ASSOCIATION);           
+            
+            deleteAssociation.setInt(1, this.getId());        
+            deleteAssociation.executeUpdate();
+            
+            deleteImage.setInt(1, this.getId());        
+            deleteImage.executeUpdate();
+            
+            return true;
+        } 
+        catch (Exception ex) 
+        {
+            Logger.getLogger(Image.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
     }
     
     static ArrayList<Image> search(String exp) throws ClassNotFoundException, SQLException, ParseException 
@@ -233,6 +274,31 @@ public class Image {
         
         Statement stmt = connec.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT * FROM IMAGE WHERE IDCATEGORIE = " + categorie);
+              
+        
+        while (rs.next())
+        {
+            res.add(new Image(
+                    rs.getInt("IDIMAGE"),
+                    rs.getInt("IDCATEGORIE"),
+                    rs.getString("NOMIMAGE"),
+                    rs.getString("DESCRIPTION"),
+                    rs.getString("PATH"),
+                    rs.getString("DATECREATION")
+            ));
+        }
+        
+        return res;
+    }
+    
+    public static ArrayList<Image> getUserImage(Personne user) throws ClassNotFoundException, SQLException, ParseException 
+    {
+        ArrayList<Image> res = new ArrayList<Image>();
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
+        
+        Statement stmt = connec.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM IMAGE WHERE IDIMAGE IN (SELECT IDIMAGE FROM met_en_ligne WHERE IDPERSONNE  = " + user.getId() + ")");
               
         
         while (rs.next())

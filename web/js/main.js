@@ -38,7 +38,6 @@ if (!Array.prototype.indexOf)
 
 $(document).ajaxStart(function()
 {
-    //$.blockUI({ message: '<img src="img/ajax_spinner.gif" />' })
     $("div#spinner").toggleClass('hide');
 })
 .ajaxStop(function()
@@ -47,7 +46,7 @@ $(document).ajaxStart(function()
 });
 
 var panier = Array();
-var lastImageId = 0; var lastImageData = Array();
+var previousExp = 0;
 
 $(document).ready(function () 
 {
@@ -61,8 +60,6 @@ $(document).ready(function ()
     {
        $(this).next().fadeOut(250); 
     });
-    
-    //$("div#mainContainer").niceScroll();
     
     
     /* --- Chargement des catégories pour le menu de gauche --- */
@@ -133,6 +130,24 @@ $(document).ready(function ()
             }
         });
         
+        $( "#div_delete_user" ).dialog({
+            autoOpen: false,
+            height: 300,
+            width: 500,
+            modal: true,
+            buttons: {
+                "Annuler": function() {
+                    $( this ).dialog( "close" );
+                },
+                "Confirmer !" : function() {
+                    deleteCurrentUser();
+                }
+            },
+            close: function() {
+                $( this ).dialog( "close" );
+            }
+        });
+        
         $( "#div_upload" ).dialog({
             autoOpen: false,
             height: 400,
@@ -145,7 +160,26 @@ $(document).ready(function ()
                 "Soumettre" : function() {
                     var form = document.getElementById('form_upload');//new FormData($('#form_file'));
                     var formData = new FormData(form);
-                    sendPic(formData);
+                    var title = $("#txt_title").val();
+                    var desc = $("#desc").val();
+                    var file = $("#file_picture").val();
+                    var split = file.split(".");
+                    var index = (split.length - 1);
+                    var extension = split[index];
+                    
+                    
+                    if (title === '')
+                        showGrowlDiv("error","Titre", "Champ vide");
+                    else if (title.length > 30)
+                        showGrowlDiv("error","Titre", "Veuillez choisir un titre plus court");
+                    else if (desc === '')
+                        showGrowlDiv("error","Description", "Champ vide");
+                    else if (file === '')
+                        showGrowlDiv("error","Image", "Champ vide");
+                    else if (extension !== 'png' && extension !== 'jpg' && extension !== 'gif' && extension !== 'bmp' && extension != 'jpeg' && extension !== 'svg')
+                        showGrowlDiv("error","Image", "Extension de fichier non reconnue");
+                    else
+                        sendPic(formData);
                 }
             },
             close: function() {
@@ -178,6 +212,7 @@ function logUser()
                 $( "#div_login" ).dialog( 'close' );
                 document.getElementById('login').setAttribute('src', "img/ok.png");
                 document.getElementById('login').onclick = toggleMenu;
+                toggleMenu();
                 window.setTimeout(function() {showGrowlDiv('success', "Bienvenue " + data, "Vous êtes maintenant identifiés")}, 250);                
             }
             else
@@ -201,13 +236,33 @@ function logOut()
         {
             document.getElementById('login').setAttribute('src', "img/login.png");
             document.getElementById('login').onclick = showLoginModal;
-            window.setTimeout(function() {showGrowlDiv("success", "Logout", "Vous êtes maintenant déconnecté")}, 250);                
+            window.setTimeout(function() {showGrowlDiv("success", "Logout", "Vous êtes maintenant déconnecté")}, 250);  
+            refreshMain();
+        }
+    );
+}
+
+function logOut(messageDeleteUser)
+{
+    toggleMenu();
+    $.post(
+        "MainController",
+        {
+            action : "logout"
+        },
+        function(data)
+        {
+            document.getElementById('login').setAttribute('src', "img/login.png");
+            document.getElementById('login').onclick = showLoginModal;
+            window.setTimeout(function() {showGrowlDiv("success", "Suppresion de compte", messageDeleteUser)}, 250);  
+            refreshMain();
         }
     );
 }
 
 function sendPic(formData)
 {
+    
     $.ajax({
             url: 'MainController',
             type: 'POST',
@@ -351,7 +406,6 @@ function refreshMain()
         function(data)
         {
             $("div#mainContainer").html(data);
-            makeTooltip();
         }
     );
 }
@@ -369,41 +423,6 @@ function getByCategorie(catId)
             $("div#mainContainer").html(data);
         }
     );
-}
-
-function makeTooltip()
-{/*
-    $( document ).tooltip({
-      items: "img.display",
-      track: true,
-      content: function() 
-      {
-        var photoId = $( this ).attr('id');
-        if (photoId != lastImageId)
-        {
-            $.get(
-                'MainController',
-                {
-                    data : "details",
-                    imgId : photoId
-                },
-                function(data)
-                {
-                    lastImageId = photoId;
-                    var split = data.split("$");//NOM - DATE - DESC - CAT - PSEUDO
-                    
-                    var date = format(split[1])
-                    
-                    lastImageData = '<div><h1 align="center">' + split[0] + '</h1><p><b>Ajouté : </b>' + date + '</p><p><b>Description : </b>' + split[2] + '</p><p><b>Catégorie : </b>' + split[3] + '</p><p><b>Par : </b>' + split[4] + '</p></div>';
-                    return lastImageData;
-                });
-        }
-        else
-        {
-            return lastImageData;
-        }
-      }
-    });*/
 }
 
 function format(date)
@@ -427,7 +446,6 @@ function search(input)
             function(data)
             {               
                 $("div#mainContainer").html(data);
-                makeTooltip();
             });
             
             previousExp = exp.length;
@@ -441,8 +459,6 @@ function search(input)
         previousExp = exp.length;
     }
 }
-
-var previousExp = 0;
 
 function deselectAllCategories()
 {
@@ -467,7 +483,6 @@ function changeCategorie(clicked)
             function(data)
             {               
                 $("div#mainContainer").html(data);
-                makeTooltip();
             });
 }
 
@@ -515,4 +530,81 @@ function subscribe()
         else
             showGrowlDiv("error", "Utilisateur en attente", "Une erreure est suvenue durant la création !");     
     });
+}
+
+function showDetails(photo)
+{
+    var path = photo.src;
+    $.get(
+        'MainController',
+        {
+            data : "details",
+            imgId : photo.id
+        },
+        function(data)
+        {
+            var html_img = '<img src="' + path + '" class="big"/><br/>';
+            $("div#mainContainer").html(data + html_img);
+        }
+    );
+}
+
+function managePictures()
+{
+    $.get(
+        'MainController',
+        {
+            data : "user_photos"
+        },
+        function(data)
+        {
+            $("div#mainContainer").html(data);
+        }
+    );
+}
+
+function showUserProfil()
+{
+    $.get(
+        'MainController',
+        {
+            data : "user_infos"
+        },
+        function(data)
+        {
+            $("div#mainContainer").html(data);
+        }
+    );
+}
+
+function deleteCurrentUser()
+{
+    $.post(
+    'MainController',
+    {
+        action : "deleteUser"
+    },
+    function(data)
+    {
+        $("div#div_delete_user").dialog('close');
+        logOut("Le compte à été supprimé avec succès");
+    });
+    
+}
+
+function deleteImage(id)
+{
+    if (confirm('Etes-vous sûr de vouloir supprimer cette image ?'))
+    {
+        $.post(
+        'MainController',
+        {
+            action : 'deleteImage',
+            idImage : id
+        },
+        function(data)
+        {
+            managePictures();
+        });
+    }
 }

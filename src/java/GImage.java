@@ -34,16 +34,24 @@ public class GImage {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
         ArrayList<Image> lastImages = Image.getLastImages();
-        for (Image i : lastImages)
+        if (lastImages.size() > 0)
         {
-            out.println("<div class=\"display\" >");
-            out.println("<img src=\"photos/" + i.getPath() +"\" class=\"display\" id=\"" + i.getId() + "\" /> ");
-            out.println("<div class=\"actions\">");
-            out.println(i.getNomImage());
-            out.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" />");
-            out.println("<img src=\"img/addPanier.png\" class=\"action\" title=\"Ajouter au panier\" id=\"" + i.getId() + "\" onclick=\"addArticleToPanier(this)\" />");
-            out.println("</div>");
-            out.println("</div>");
+            out.println("<h2 id='galleryTitle'>Gallerie principale</h2>");
+            for (Image i : lastImages)
+            {
+                out.println("<div class=\"display\" >");
+                out.println("<img src=\"photos/" + i.getPath() +"\" class=\"display\" id=\"" + i.getId() + "\" onclick=\"showDetails(this);\" /> ");
+                out.println("<div class=\"actions\">");
+                out.println(i.getNomImage());
+                out.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" />");
+                out.println("<img src=\"img/addPanier.png\" class=\"action\" title=\"Ajouter au panier\" id=\"" + i.getId() + "\" onclick=\"addArticleToPanier(this)\" />");
+                out.println("</div>");
+                out.println("</div>");
+            }
+        }
+        else
+        {
+            out.println("<h3> Désolé, il n'existe actuellement aucune image dans la base,<br />Créez un compte et/ou commencez à uploader des images dès maintenant !</h3>");
         }
     }
     
@@ -110,17 +118,22 @@ public class GImage {
 
     static void getImageDetails(int id, PrintWriter stream) throws ClassNotFoundException 
     {
+        Image i = new Image(id);
         ArrayList<String> details = new ArrayList<String>();
         try {
-            details = Image.getImageDetails(id);
+            details = i.getImageDetails();
         } catch (SQLException ex) {
             Logger.getLogger(GImage.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        for (String detail : details)
-        {
-            stream.print(detail+'$');
-        }
+        String[] split = details.get(1).split("-");
+        
+        stream.println("<h2 id='galleryTitle' >" + details.get(0) + "</h2>");
+        stream.println("<p><b>Catégorie : </b>" + details.get(4) + "</p>");
+        stream.println("<p><b>Ajoutée le : </b>" + split[2] + '/' + split[1] + '/' + split[0] + "</p>");
+        stream.println("<p><b>Par : </b>" + details.get(5) + "</p>");
+        stream.println("<p><b>Description : </b>" + details.get(2) + "</p>");
+        
     }
     
     static void search(String exp, PrintWriter stream) throws ClassNotFoundException, ParseException 
@@ -132,16 +145,24 @@ public class GImage {
             Logger.getLogger(GImage.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        for (Image i : found)
+        if (found.size() > 0)
         {
-            stream.println("<div class=\"display\" >");
-            stream.println("<img src=\"photos/" + i.getPath() +"\" class=\"display\" id=\"" + i.getId() + "\" /> ");
-            stream.println("<div class=\"actions\">");
-            stream.println(i.getNomImage());
-            stream.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" />");
-            stream.println("<img src=\"img/addPanier.png\" class=\"action\" title=\"Ajouter au panier\" id=\"" + i.getId() + "\" onclick=\"addArticleToPanier(this)\" />");
-            stream.println("</div>");
-            stream.println("</div>");
+            stream.println("<h2 id='galleryTitle'> Résultat de recherche </h2>");
+            for (Image i : found)
+            {
+                stream.println("<div class=\"display\" >");
+                stream.println("<img src=\"photos/" + i.getPath() +"\" class=\"display\" id=\"" + i.getId() + "\" onclick=\"showDetails(this);\" /> ");
+                stream.println("<div class=\"actions\">");
+                stream.println(i.getNomImage());
+                stream.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" />");
+                stream.println("<img src=\"img/addPanier.png\" class=\"action\" title=\"Ajouter au panier\" id=\"" + i.getId() + "\" onclick=\"addArticleToPanier(this)\" />");
+                stream.println("</div>");
+                stream.println("</div>");
+            }
+        }
+        else
+        {
+            stream.println("<h3> Désolé, la recherche n'a retourné aucun résultat :(");
         }
     }
 
@@ -154,16 +175,65 @@ public class GImage {
             Logger.getLogger(GImage.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        if (imgCategorie.size() > 0)
+        {
+            stream.println("<h2 id='galleryTitle'> Affichage par catégorie </h2>");
+            for (Image i : imgCategorie)
+            {
+                stream.println("<div class=\"display\" >");
+                stream.println("<img src=\"photos/" + i.getPath() +"\" class=\"display\" id=\"" + i.getId() + "\" onclick=\"showDetails(this);\" /> ");
+                stream.println("<div class=\"actions\">");
+                stream.println(i.getNomImage());
+                stream.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" />");
+                stream.println("<img src=\"img/addPanier.png\" class=\"action\" title=\"Ajouter au panier\" id=\"" + i.getId() + "\" onclick=\"addArticleToPanier(this)\" />");
+                stream.println("</div>");
+                stream.println("</div>");
+            }
+        }
+        else
+        {
+            stream.println("<h3> Désolé, il n'existe actuellement aucune image appartenant à cette catégorie !");
+        }
+    }
+
+    static void getUserImage(HttpServletRequest request, PrintWriter stream) throws ClassNotFoundException, ParseException 
+    {
+        HttpSession session = request.getSession();
+        Personne user = (Personne)session.getAttribute("Logged");       
+        ArrayList<Image> imgCategorie = new ArrayList<Image>();
+        try {
+            imgCategorie = Image.getUserImage(user);
+        } catch (SQLException ex) {
+            Logger.getLogger(GImage.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        stream.println("<h2 id='galleryTitle'>Gestion des images de <b>" + user.getPseudo() + "</b></h2>");
+        stream.println("<table rules='all' border='1'><tr><th>Nom</th><th>Création</th><th>Description</th><th>Chemin</th><th>Actions</th></tr>");
+        
         for (Image i : imgCategorie)
         {
-            stream.println("<div class=\"display\" >");
-            stream.println("<img src=\"photos/" + i.getPath() +"\" class=\"display\" id=\"" + i.getId() + "\" /> ");
-            stream.println("<div class=\"actions\">");
-            stream.println(i.getNomImage());
-            stream.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" />");
-            stream.println("<img src=\"img/addPanier.png\" class=\"action\" title=\"Ajouter au panier\" id=\"" + i.getId() + "\" onclick=\"addArticleToPanier(this)\" />");
-            stream.println("</div>");
-            stream.println("</div>");
+            stream.println("<tr><td>" + i.getNomImage() + "</td><td>" + i.getCreationDate() + "</td><td>" + i.getDescription() + "</td><td class='path' onclick=\"window.open('photos/" + i.getPath() + "');\" >" + i.getPath() + "</td><td><img src='img/modifier.png' id='" + i.getId() + "'/><img src='img/supprimer.png' onclick='deleteImage(" + i.getId() + ");'/></td></tr>");
+        }
+        
+        stream.println("</table>");
+    }
+
+    static void delete(int parameter, String servletPath) 
+    {
+        try 
+        {
+            Image i = new Image(parameter);
+            
+            ArrayList<String> infos = i.getImageDetails();
+            String imgPath = infos.get(3);
+            
+            i.deleteImage();
+            File toDelete = new File(servletPath + '/' + imgPath);
+            toDelete.delete();
+        } 
+        catch (Exception ex) 
+        {
+            Logger.getLogger(GImage.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

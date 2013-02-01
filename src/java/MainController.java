@@ -107,6 +107,28 @@ public class MainController extends HttpServlet {
             }
         }
         
+        else if ("user_photos".equals(data))
+        {
+            try {
+                try {
+                    GImage.getUserImage(request, out);
+                } catch (ParseException ex) {
+                    Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        else if ("user_infos".equals(data))
+        {
+            try {
+                GPersonne.getUserDetails(request, out);
+            } catch (Exception ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
         else if ("imgCategorie".equals(data))
         {
             try {
@@ -178,6 +200,18 @@ public class MainController extends HttpServlet {
         else if ("subscribe".equals(action))
         {
             GPersonne.createUser(request.getParameter("login"), request.getParameter("password"), request.getParameter("mail"), out);
+        }
+        
+        else if ("deleteImage".equals(action))
+        {
+            String yourTempDirectory = getServletContext().getRealPath("/photos/");
+            GImage.delete(Integer.parseInt(request.getParameter("idImage")), yourTempDirectory);
+        }
+        
+        else if ("deleteUser".equals(action))
+        {
+            String yourTempDirectory = getServletContext().getRealPath("/photos/");
+            GPersonne.delete(request, yourTempDirectory);
         }
         
         else //UPLOAD

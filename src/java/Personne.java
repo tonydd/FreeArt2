@@ -26,6 +26,7 @@ public class Personne
     private     String   mail;
     
     static final String WRITE_PERSONNE = "INSERT INTO personne(PSEUDO, PASSWORD, ADRESSEEMAIL) VALUES ( ?, ?, ?)";
+    static final String DELETE_PERSONNE = "DELETE FROM personne WHERE IDPERSONNE = ?";
     
     public Personne ()
     {
@@ -139,6 +140,23 @@ public class Personne
                 System.out.println(e);
                 return false;
             }
+    }
+
+    void delete() 
+    {
+        try
+        {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
+            PreparedStatement deleteUser = connec.prepareStatement(DELETE_PERSONNE);
+
+            deleteUser.setInt(1, this.getId());
+            deleteUser.executeUpdate();
+        }
+        catch (Exception e)
+        {
+            System.out.println(e);
+        }
     }
     
 }

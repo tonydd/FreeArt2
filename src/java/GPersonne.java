@@ -1,6 +1,7 @@
 
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,6 +62,43 @@ public class GPersonne {
         {
             out.print("KO");
         }
+    }
+
+    static void getUserDetails(HttpServletRequest request, PrintWriter out) throws ClassNotFoundException, SQLException, ParseException 
+    {
+        HttpSession session = request.getSession();
+        Personne user = (Personne)session.getAttribute("Logged"); 
+        ArrayList<Image> userImages = Image.getUserImage(user);
+        
+        out.println("<h2 id='galleryTitle'> Détails de l'utilisateur</h2>");
+        out.println("<p><b> Pseudo : </b>" + user.getPseudo() + "</p>");
+        out.println("<p><b> Adresse mail : </b>" + user.getMail() + "</p>");
+        out.println("<p><b> Mot de passe du compte : </b>" + user.getPassword() + "</p>");
+        out.println("<p><b> Nombre d'images uploadées : </b>" + userImages.size() +"&nbsp;&nbsp; <a href='#' onclick='managePictures();'>Afficher le détail</a></p>");
+        out.println("<p><b> Nombre de commentaires postés : </b> Pas encore implémenté :( </p>");
+        out.println("<p><img src='img/supprimer.png' /><b><a href='#' onclick='$( \"div#div_delete_user\" ).dialog( \"open\" );'> Supprimer le compte</a></b></p>");
+    }
+
+    static void delete(HttpServletRequest request, String yourTempDirectory) 
+    {
+        try 
+        {
+            HttpSession session = request.getSession();
+            Personne user = (Personne)session.getAttribute("Logged");
+            ArrayList<Image> userImages = Image.getUserImage(user);
+            
+            for (Image i : userImages)
+            {
+                GImage.delete(i.getId(), yourTempDirectory);
+            }
+            
+            user.delete();
+            
+        } 
+        catch (Exception ex) 
+        {
+            Logger.getLogger(GPersonne.class.getName()).log(Level.SEVERE, null, ex);
+        } 
     }
     
 }
