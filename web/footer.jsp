@@ -5,7 +5,7 @@
 --%>
 <footer>
             <div id="detailsPanier">
-                Articles dans le panier : <label id="panierCount">0</label><a href="#" class="hide" id="accesPanier">Voir le contenu du panier</a>
+                Articles dans le panier : <label id="panierCount">0</label><a href="#" class="hide" id="accesPanier" onclick="showBasketContent()">Voir le contenu du panier</a>
             </div>
             
             <div id="about">

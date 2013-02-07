@@ -22,6 +22,8 @@
             <img src="img/spinner2-black.gif" style="width: 50px;" />
         </div>
         
+        <!-- ******************* HTML FENETRES MODALES ************************** -->
+        
         <div id="div_login" title="Connexion à votre compte utilisateur">
             <form id="form_login">
                 <label for="txt_login">Login : </label>
@@ -88,12 +90,42 @@
             <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>Cette opération est irrévérsible, elle détruira aussi toutes les photos que vous avez uploadé, <br />Etes-vous sûr de vouloir continuer ?</p>
         </div>
         
+        <div id="show_panier" title="Contenu du panier">
+            <table rules="all" border="1">
+                <thead>
+                    <tr>
+                        <th>
+                            Image
+                        </th>
+                        <th>
+                            Catégorie
+                        </th>
+                        <th>
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="basketContent"></tbody>
+            </table>
+        </div>
+        
+        <div id="commentPanel" title="Commentaires">
+            <div id="comments"></div>
+            <div id="post_comment">
+                <h3>Votre commentaire : </h3>
+                <textarea id="txt_comment">
+
+                </textarea>
+            </div>
+        </div>
+        
+        <!-- **************** MENU DEROULANT ACTIONS UTILISATEUR ********************************** -->
+        
         <div id="div_menu" class="hide">
             <ul>
                 <li class="menuItem" onclick="showUserProfil();">Voir mon profil</li>
                 <li class="menuItem" onclick='$( "#div_upload" ).dialog( "open" );'>Uploader une image</li>
                 <li class="menuItem" onclick='managePictures();'>Gérer mes images</li>
-                <li class="menuItem">Random fonction</li>
                 <li class="menuItem" onclick="logOut()">Se déconnecter</li>
             </ul>
         </div>

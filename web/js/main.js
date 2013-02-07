@@ -148,6 +148,82 @@ $(document).ready(function ()
             }
         });
         
+        $( "div#show_panier" ).dialog({
+            autoOpen: false,
+            height: 600,
+            width: 400,
+            modal: true,
+            buttons: {
+                "Vider le panier": function() {
+                    panier = Array();
+                    $("a#accesPanier").addClass('hide');
+                    document.getElementById('panierCount').innerHTML = '0&nbsp;&nbsp;';
+                    $( this ).dialog( "close" );
+                },
+                "Valider sélection" : function() {
+                    $.post(
+                        'MainController',
+                        {
+                            action : 'downloadBasket',
+                            content : panier
+                        },
+                        function(data)
+                        {
+                            if (data != "KO")
+                            {
+                                showGrowlDiv('success', 'Téléchargement lancé', 'Veuillez patienter S.V.P.');
+                                window.location = "archives/" + data;
+                            }
+                            else
+                            {
+                                showGrowlDiv('error', 'Téléchargement échoué', 'Une erreur est survenue, veuillez rééssayer ultérieurement S.V.P.');
+                            }
+                        });
+                }
+            },
+            close: function() {
+                $( this ).dialog( "close" );
+            }
+        });
+        
+        $( "div#commentPanel" ).dialog({
+            autoOpen: false,
+            height: 500,
+            width: 800,
+            modal: true,
+            buttons: {
+                "Fermer": function() {
+                    $( this ).dialog( "close" );
+                },
+                "Ajouter commentaire" : function() {
+                    $.post(
+                        'MainController',
+                        {
+                            action : 'postComment',
+                            text : $("#txt_comment").val(),
+                            imgId : $("div#comments").attr('title')
+                        },
+                        function(data)
+                        {
+                            if (data === 'OK')
+                            {
+                                showGrowlDiv('success', 'Succès', 'Commentaire ajouté');
+                                showComments(parseInt($("div#comments").attr('title')));
+                                $("#txt_comment").val("");
+                            }
+                            else
+                            {
+                                showGrowlDiv('error', 'Erreur', data);
+                            }
+                        }
+                    );
+                }
+            },
+            close: function() {
+                $( this ).dialog( "close" );
+            }
+        });
+        
         $( "#div_upload" ).dialog({
             autoOpen: false,
             height: 400,
@@ -224,24 +300,6 @@ function logUser()
     );
 }
 
-function logOut()
-{
-    toggleMenu();
-    $.post(
-        "MainController",
-        {
-            action : "logout"
-        },
-        function(data)
-        {
-            document.getElementById('login').setAttribute('src', "img/login.png");
-            document.getElementById('login').onclick = showLoginModal;
-            window.setTimeout(function() {showGrowlDiv("success", "Logout", "Vous êtes maintenant déconnecté")}, 250);  
-            refreshMain();
-        }
-    );
-}
-
 function logOut(messageDeleteUser)
 {
     toggleMenu();
@@ -254,7 +312,10 @@ function logOut(messageDeleteUser)
         {
             document.getElementById('login').setAttribute('src', "img/login.png");
             document.getElementById('login').onclick = showLoginModal;
-            window.setTimeout(function() {showGrowlDiv("success", "Suppresion de compte", messageDeleteUser)}, 250);  
+            if (messageDeleteUser != null)
+                window.setTimeout(function() {showGrowlDiv("success", "Suppression de compte", messageDeleteUser)}, 250);  
+            else
+                window.setTimeout(function() {showGrowlDiv("success", "Logout", "Vous êtes maintenant déconnecté")}, 250);  
             refreshMain();
         }
     );
@@ -318,7 +379,7 @@ function toggleMenu()
         $("div#div_menu").removeClass('hide');
         $("div#div_menu").animate(
         {
-            'height' : '205px',
+            'height' : '163px',
             'opacity' : '0.7'
             },
             500,
@@ -358,7 +419,7 @@ function showGrowlDiv(type, titleText, contentText)
     else if (type === 'error')
         img.src = 'img/ko.png';
     
-    $(img).css({'float' : 'left'});
+    //$(img).css({'float' : 'left'});
     
     div.appendChild(img);
     div.appendChild(title);
@@ -373,8 +434,9 @@ function showGrowlDiv(type, titleText, contentText)
             centerY: false, 
             css: { 
                 width: '350px', 
-                top: '5.5%', 
-                left: '', 
+                bottom: '5.5%', 
+                left: '',
+                top : '',
                 right: '10px', 
                 border: 'none', 
                 padding: '5px', 
@@ -607,4 +669,89 @@ function deleteImage(id)
             managePictures();
         });
     }
+}
+
+function showBasketContent()
+{
+    $.get(
+        'MainController',
+        {
+            data : "basket",
+            content : panier
+        },
+        function(data)
+        {
+            $("#basketContent").html(data);
+            $("div#show_panier").dialog( 'open' );
+        }
+    );
+}
+
+function deleteFromPanierInModal(imgId)
+{
+    panier.unset(imgId);
+    
+    var length = panier.length;
+    if (length > 0)
+    {
+        $.get(
+            'MainController',
+            {
+                data : "basket",
+                content : panier
+            },
+            function(data)
+            {
+                $("#basketContent").html(data);
+                document.getElementById('panierCount').innerHTML = length + '&nbsp;&nbsp;';
+            }
+        );
+    }
+    else
+    {
+        document.getElementById('panierCount').innerHTML = length + '&nbsp;&nbsp;';
+        $("a#accesPanier").addClass('hide');
+        $("div#show_panier").dialog( 'close');
+    }
+}
+
+function showComments(imgId)
+{
+    $("div#comments").attr('title', imgId);
+    console.log(imgId);
+    $.get(
+        'MainController',
+        {
+            data : 'imgComments',
+            imgId : imgId
+        },
+        function(data)
+        {
+            $("div#comments").html(data);
+            $("div#commentPanel").dialog( 'open' );
+        }
+    );
+}
+
+function deleteComment(id)
+{
+    $.post(
+        'MainController',
+        {
+            action : "deleteComment",
+            commentId : id
+        },
+        function(data)
+        {
+            if (data == 'OK')
+            {
+                showGrowlDiv('success', 'Suppression', 'Le commentaire à été supprimé avec succès');
+                showComments(parseInt($("div#comments").attr('title')));
+            }
+            else
+            {
+                showGrowlDiv('error', 'Suppression', data);
+            }
+        }
+    );
 }

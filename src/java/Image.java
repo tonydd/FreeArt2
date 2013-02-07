@@ -31,6 +31,8 @@ public class Image {
     //private Date dateModification;
     private String description;
     private String path;
+    private Categorie categorie;
+    private Personne user;
     
     static final String WRITE_IMAGE = "INSERT INTO image(IDCATEGORIE, NOMIMAGE, DATECREATION, DESCRIPTION, PATH) VALUES ( ?, ?, ?, ?, ?)";
     static final String WRITE_ASSOCIATION = "INSERT INTO met_en_ligne(IDPERSONNE, IDIMAGE) VALUES ( ?, ?)";
@@ -104,9 +106,44 @@ public class Image {
         return this.idCategorie;
     }
     
+    public Categorie getCategorie()
+    {
+        return this.categorie;
+    }
+    
+    public Personne getUser()
+    {
+        return this.user;
+    }
+    
+    public void setName(String name)
+    {
+        this.nomImage = name;
+    }
+    
+    public void setDateCreation(String d) throws ParseException
+    {
+        this.dateCreation = formater.parse(d);
+    }
+    
+    public void setDescription(String desc)
+    {
+        this.description = desc;
+    }
+    
     public void setPath(String path)
     {
         this.path = path;
+    }
+    
+    public void setCategorie(Categorie c)
+    {
+        this.categorie = c;
+    }
+    
+    public void setUser(Personne p)
+    {
+        this.user = p;
     }
     
     
@@ -117,7 +154,7 @@ public class Image {
         Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
         
         Statement stmt = connec.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM IMAGE ORDER BY DATECREATION LIMIT 50");
+        ResultSet rs = stmt.executeQuery("SELECT * FROM IMAGE ORDER BY DATECREATION DESC LIMIT 50");
         while (rs.next())
         {
             res.add(new Image(
@@ -177,9 +214,8 @@ public class Image {
         return 0;
     }
     
-    public ArrayList<String> getImageDetails() throws ClassNotFoundException, SQLException 
+    public void fillImageDetails() throws ClassNotFoundException, SQLException, ParseException 
     {
-        ArrayList<String> res = new ArrayList<String>();
         Class.forName("com.mysql.jdbc.Driver");
         Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
         
@@ -187,34 +223,44 @@ public class Image {
         ResultSet rs = stmt.executeQuery("SELECT * FROM IMAGE WHERE IDIMAGE = " + this.id);
         if (rs.next())
         {
-            res.add(rs.getString(3));//NOM
-            res.add(rs.getString(4));//DATECREATION
-            res.add(rs.getString(6));//DESCRIPTION
-            res.add(rs.getString(7));//PATH
+            this.setName(rs.getString(3));
+            this.setDateCreation(rs.getString(4));
+            this.setDescription(rs.getString(6));
+            this.setPath(rs.getString(7));
             
-            ResultSet rs2 = stmt.executeQuery("SELECT NOMCATEGORIE FROM categorie WHERE IDCATEGORIE = " + rs.getInt(2));
+            ResultSet rs2 = stmt.executeQuery("SELECT * FROM categorie WHERE IDCATEGORIE = " + rs.getInt(2));
             if (rs2.next())
             {
-                res.add(rs2.getString(1));//CATEGORIE
+                Categorie c =new Categorie(
+                    rs2.getInt(1),
+                    rs2.getString(2)
+                );
+                
+                this.setCategorie(c);
             }
             else
             {
-                res.add("Non trouvé");
+                this.setCategorie(new Categorie());
             }
             
-            rs2 = stmt.executeQuery("SELECT PSEUDO FROM personne WHERE IDPERSONNE = (SELECT IDPERSONNE FROM met_en_ligne WHERE IDIMAGE = " + id + ")");
+            rs2 = stmt.executeQuery("SELECT * FROM personne WHERE IDPERSONNE = (SELECT IDPERSONNE FROM met_en_ligne WHERE IDIMAGE = " + id + ")");
             
             if (rs2.next())
             {
-                res.add(rs2.getString(1));//PSEUDO
+                Personne p = new Personne(
+                    rs2.getInt(1),
+                    rs2.getString(2),
+                    rs2.getString(3),
+                    rs2.getString(4)
+                );
+                
+                this.setUser(p);
             }
             else
             {
-                res.add("Non trouvé");
+                this.setUser(new Personne());
             }
         }
-        
-        return res;
     }
     
     public boolean deleteImage()

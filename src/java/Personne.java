@@ -33,6 +33,11 @@ public class Personne
         
     }
     
+    public Personne (int id)
+    {
+        this.id = id;
+    }
+    
     public Personne (String pseudo, String password)
     {
         this.pseudo = pseudo;
@@ -157,6 +162,28 @@ public class Personne
         {
             System.out.println(e);
         }
+    }
+
+    int getCountOfPostedComments() 
+    {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection connec = DriverManager.getConnection("jdbc:mysql://localhost:3306/FreeArt", "root", "");
+
+            Statement stmt = connec.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM poste WHERE IDPERSONNE = " + this.getId());
+            
+            if (rs.next())
+            {
+                return rs.getInt(1);
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println(e);
+        }
+        
+        return 0;
     }
     
 }

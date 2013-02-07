@@ -3,7 +3,9 @@
  * and open the template in the editor.
  */
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
@@ -129,6 +131,25 @@ public class MainController extends HttpServlet {
             }
         }
         
+        else if ("imgComments".equals(data))
+        {
+            try {
+                GCommentaire.getImageComments(Integer.parseInt(request.getParameter("imgId")),request, out);
+            } catch (Exception ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        else if ("basket".equals(data))
+        {
+            String[] values = request.getParameterValues("content[]");
+            try {
+                GImage.getBasket(values, out);
+            } catch (Exception ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }      
+        
         else if ("imgCategorie".equals(data))
         {
             try {
@@ -214,6 +235,26 @@ public class MainController extends HttpServlet {
             GPersonne.delete(request, yourTempDirectory);
         }
         
+        else if ("postComment".equals(action))
+        {
+            GCommentaire.createComment(request.getParameter("text"),Integer.parseInt(request.getParameter("imgId")), out, request);
+        }
+        
+        else if ("deleteComment".equals(action))
+        {
+            GCommentaire.deleteComment(Integer.parseInt(request.getParameter("commentId")), out, request);
+        }
+        
+        else if ("downloadBasket".equals(action))
+        {
+            String[] values = request.getParameterValues("content[]");
+            
+            String photoDirectory = getServletContext().getRealPath("/photos/");
+            String archiveDiretory = getServletContext().getRealPath("/archives/");
+            
+            GImage.makeArchive(values,photoDirectory, archiveDiretory, out, request);
+        }
+        
         else //UPLOAD
         {
             try 
@@ -241,4 +282,5 @@ public class MainController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
+    
 }

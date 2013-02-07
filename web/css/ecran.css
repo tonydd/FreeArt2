@@ -360,13 +360,13 @@ div#mainContainer h1
     border-bottom-color: linear-gradient(to right,  rgba(108,165,209,1) 0%,rgba(119,177,223,1) 62%,rgba(120,178,224,0.7) 68%,rgba(125,185,232,0) 100%); /* W3C */
 }
 
-div#mainContainer table
+div#mainContainer table, div#show_panier table
 {
     max-width: 95%;
     border-radius: 5px;
 }
 
-div#mainContainer table tr th
+div#mainContainer table tr th, div#show_panier table tr th
 {
     background-color: #6DA6D1;
     border-color: #3E7AA5;
@@ -374,7 +374,7 @@ div#mainContainer table tr th
     font-weight: bold;
 }
 
-div#mainContainer table tr td
+div#mainContainer table tr td, div#show_panier table tr td
 {
     padding : 5px;
     max-width: 20%;
@@ -394,13 +394,67 @@ div#mainContainer table tr td
         cursor: pointer;
     }
 
-div#mainContainer table tr td img
+div#mainContainer table tr td img, div#show_panier table tr td img
 {
     margin-left: 15px;
     margin-right: 15px;
 }
 
-div#mainContainer table tr td img:hover
+div#mainContainer table tr td img:hover, div#show_panier table tr td img:hover
 {
     cursor: pointer;
 }
+
+table#buttons td
+{
+    border: 3px solid black;
+}
+/* ----- AFFICHAGE COMMENTAIRES ---- */
+div#comments
+{
+    padding-bottom: 25px;
+    border-bottom: 5px solid #C5DBEC;
+}
+
+#txt_comment
+{
+    width: 50%;
+    height: 30%;
+}
+
+div.comment
+{
+    border-radius: 5px;
+    width: 93%;
+    margin-left: 2.5%;
+    margin-bottom: 1%;
+    background-color: #D9E9F4;
+    padding: 1%;
+    min-height: 50px;
+    word-wrap:break-word;
+}
+
+div.comment p
+{
+    word-wrap:break-word;
+}
+
+label.info
+{
+    font-size: 0.8em;
+    color: grey;
+    font-style: italic;
+    word-wrap:break-word;
+    width: 75%;
+    border-bottom: 1px solid grey;
+}
+
+img.delete
+{
+    width: 16px;
+    float: right;
+}
+    img.delete:hover
+    {
+        cursor: pointer;
+    }

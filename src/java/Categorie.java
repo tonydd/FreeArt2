@@ -20,6 +20,11 @@ public class Categorie {
     private int id;
     private String cat;
     
+    public Categorie()
+    {
+        
+    }
+    
     public Categorie(int id, String categorie)
     {
         this.id = id;

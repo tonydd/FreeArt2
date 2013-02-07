@@ -1,14 +1,19 @@
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -22,6 +27,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
 
 /**
  *
@@ -43,7 +49,7 @@ public class GImage {
                 out.println("<img src=\"photos/" + i.getPath() +"\" class=\"display\" id=\"" + i.getId() + "\" onclick=\"showDetails(this);\" /> ");
                 out.println("<div class=\"actions\">");
                 out.println(i.getNomImage());
-                out.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" />");
+                out.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" onclick=\"showComments(" + i.getId() + ");\" />");
                 out.println("<img src=\"img/addPanier.png\" class=\"action\" title=\"Ajouter au panier\" id=\"" + i.getId() + "\" onclick=\"addArticleToPanier(this)\" />");
                 out.println("</div>");
                 out.println("</div>");
@@ -119,20 +125,23 @@ public class GImage {
     static void getImageDetails(int id, PrintWriter stream) throws ClassNotFoundException 
     {
         Image i = new Image(id);
-        ArrayList<String> details = new ArrayList<String>();
         try {
-            details = i.getImageDetails();
-        } catch (SQLException ex) {
+            i.fillImageDetails();
+        } catch (Exception ex) {
             Logger.getLogger(GImage.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        String[] split = details.get(1).split("-");
-        
-        stream.println("<h2 id='galleryTitle' >" + details.get(0) + "</h2>");
-        stream.println("<p><b>Catégorie : </b>" + details.get(4) + "</p>");
+        String[] split = i.getCreationDate().split("-");
+        stream.println("<h2 id='galleryTitle' >" + i.getNomImage() + "</h2>");
+        stream.println("<p><b>Catégorie : </b>" + i.getCategorie().getCategorie() + "</p>");
         stream.println("<p><b>Ajoutée le : </b>" + split[2] + '/' + split[1] + '/' + split[0] + "</p>");
-        stream.println("<p><b>Par : </b>" + details.get(5) + "</p>");
-        stream.println("<p><b>Description : </b>" + details.get(2) + "</p>");
+        stream.println("<p><b>Par : </b>" + i.getUser().getPseudo() + "</p>");
+        stream.println("<p><b>Description : </b>" + i.getDescription() + "</p>");
+        stream.println("<table id='buttons'><tr><td>");
+        stream.println("<img src=\"img/addPanier.png\" title=\"Ajouter au panier\" id=\"" + i.getId() + "\" onclick=\"addArticleToPanier(this)\" /><br>Ajouter au panier");
+        stream.println("</td><td>");
+        stream.println("<img src='img/comment.png' onclick=\"showComments(" + i.getId() + ");\" /><br>Ajouter un commentaire");
+        stream.println("</td></tr></table>");
         
     }
     
@@ -154,7 +163,7 @@ public class GImage {
                 stream.println("<img src=\"photos/" + i.getPath() +"\" class=\"display\" id=\"" + i.getId() + "\" onclick=\"showDetails(this);\" /> ");
                 stream.println("<div class=\"actions\">");
                 stream.println(i.getNomImage());
-                stream.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" />");
+                stream.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" onclick=\"showComments(" + i.getId() + ");\" />");
                 stream.println("<img src=\"img/addPanier.png\" class=\"action\" title=\"Ajouter au panier\" id=\"" + i.getId() + "\" onclick=\"addArticleToPanier(this)\" />");
                 stream.println("</div>");
                 stream.println("</div>");
@@ -184,7 +193,7 @@ public class GImage {
                 stream.println("<img src=\"photos/" + i.getPath() +"\" class=\"display\" id=\"" + i.getId() + "\" onclick=\"showDetails(this);\" /> ");
                 stream.println("<div class=\"actions\">");
                 stream.println(i.getNomImage());
-                stream.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" />");
+                stream.println("<img src=\"img/comment.png\" class=\"action\" title=\"Commenter\" onclick=\"showComments(" + i.getId() + ");\" />");
                 stream.println("<img src=\"img/addPanier.png\" class=\"action\" title=\"Ajouter au panier\" id=\"" + i.getId() + "\" onclick=\"addArticleToPanier(this)\" />");
                 stream.println("</div>");
                 stream.println("</div>");
@@ -192,7 +201,7 @@ public class GImage {
         }
         else
         {
-            stream.println("<h3> Désolé, il n'existe actuellement aucune image appartenant à cette catégorie !");
+            stream.println("<h3> Désolé, il n'existe actuellement aucune image appartenant à cette catégorie ! </h3>");
         }
     }
 
@@ -223,9 +232,15 @@ public class GImage {
         try 
         {
             Image i = new Image(parameter);
-            
-            ArrayList<String> infos = i.getImageDetails();
-            String imgPath = infos.get(3);
+            try 
+            {
+                i.fillImageDetails();
+            }
+            catch (Exception e)
+            {
+                System.out.println(e);
+            }
+            String imgPath = i.getPath();
             
             i.deleteImage();
             File toDelete = new File(servletPath + '/' + imgPath);
@@ -235,5 +250,102 @@ public class GImage {
         {
             Logger.getLogger(GImage.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    static void getBasket(String[] values, PrintWriter out) 
+    {
+        for (String s : values)
+        {
+            int id = Integer.parseInt(s);
+            Image i = new Image(id);
+            try {
+                i.fillImageDetails();
+            } catch (Exception ex) {
+                Logger.getLogger(GImage.class.getName()).log(Level.SEVERE, null, ex);
+            } 
+            
+            out.println("<tr>");
+            out.println("<td>" + i.getNomImage() + "</td>");
+            out.println("<td>" + i.getCategorie().getCategorie() + "</td>");
+            out.println("<td onclick=\"deleteFromPanierInModal('" + i.getId() + "');\"><img src='img/supprimer.png' /></td>");
+            out.println("</tr>");
+        }
+    }
+
+    static void makeArchive(String[] values, String photoDirectory, String archiveDiretory, PrintWriter out, HttpServletRequest request) 
+    {
+        HttpSession session = request.getSession();
+        Personne user = (Personne)session.getAttribute("Logged");
+        
+        ArrayList<String> files = new ArrayList<String>();
+        for (String sid : values)
+        {
+            int id = Integer.parseInt(sid);
+            Image i = new Image(id);
+            try {
+                i.fillImageDetails();
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(GImage.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                Logger.getLogger(GImage.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParseException ex) {
+                Logger.getLogger(GImage.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            files.add(photoDirectory + '/' + i.getPath());
+        }
+        
+        
+        if (Zipper.generateZipFile(files, archiveDiretory, user.getPseudo()))
+        {
+            out.print(user.getPseudo());
+        }
+        else
+        {
+            out.print("KO");
+        }
+    }
+}
+class Zipper
+{
+    public static boolean generateZipFile(ArrayList<String> sourcesFilenames, String destinationDir, String zipFilename){
+        // Create a buffer for reading the files 
+        byte[] buf = new byte[1024]; 
+
+        try 
+        {
+            // VER SI HAY QUE CREAR EL ROOT PATH
+                  boolean result = (new File(destinationDir)).mkdirs();
+
+                  String zipFullFilename = destinationDir + "/" + zipFilename;
+
+                  System.out.println(result);
+
+            // Create the ZIP file  
+            ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFullFilename)); 
+       
+            // Compress the files 
+            for (String filename: sourcesFilenames) { 
+             FileInputStream in = new FileInputStream(filename); 
+             // Add ZIP entry to output stream. 
+             File file = new File(filename); //"Users/you/image.jpg"
+             out.putNextEntry(new ZipEntry(file.getName())); //"image.jpg" 
+             // Transfer bytes from the file to the ZIP file 
+             int len; 
+             while ((len = in.read(buf)) > 0) { 
+              out.write(buf, 0, len); 
+             } 
+             // Complete the entry 
+             out.closeEntry(); 
+             in.close(); 
+            } // Complete the ZIP file 
+            out.close();
+
+            return true;
+        } 
+        catch (Exception e) 
+        { 
+            System.out.println(e);
+            return false;
+        }  
     }
 }
